@@ -24,7 +24,7 @@ describe('mock product catalogue', () => {
       id: 'ak47-wild-lotus',
       name: 'AK-47 | Дикий лотос',
       price: 15_474.43,
-      currency: '$',
+      currency: 'COINS',
       condition: 'Прямо с завода',
       attributeLabel: 'Float',
       attribute: '0,054949',

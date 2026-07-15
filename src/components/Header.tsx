@@ -11,7 +11,7 @@ export function Header() {
           <a href="#how">Как это работает</a>
           <a href="#faq">FAQ</a>
         </nav>
-        <a className="inventory-link nyxo-action" href="#popular">
+        <a className="inventory-link nyxo-action" href="#account-inventory">
           <span className="status-lamp" aria-hidden="true" />
           Инвентарь
         </a>

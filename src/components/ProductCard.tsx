@@ -11,11 +11,11 @@ interface ProductCardProps {
   onSelect?: () => void
 }
 
-export const formatPrice = (price: number, currency: '$' | '₽') =>
+export const formatPrice = (price: number, _currency: 'COINS') =>
   `${new Intl.NumberFormat('ru-RU', {
-    minimumFractionDigits: currency === '$' ? 2 : 0,
-    maximumFractionDigits: currency === '$' ? 2 : 0,
-  }).format(price).replaceAll('\u00a0', ' ')} ${currency}`
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(Math.round(price)).replaceAll('\u00a0', ' ')} COINS`
 
 export function ProductCard({
   product,

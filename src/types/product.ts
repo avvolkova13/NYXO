@@ -12,7 +12,7 @@ export interface Product {
   game: string
   category: string
   price: number
-  currency: '$' | '₽'
+  currency: 'COINS'
   condition: string
   attributeLabel?: string
   attribute?: string

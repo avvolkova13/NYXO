@@ -101,6 +101,7 @@ summary:focus-visible {
 
 .site-header,
 .hero,
+.content-section,
 .popular,
 .how,
 .inspection,
@@ -1200,6 +1201,334 @@ details[open] .status-lamp {
   line-height: 1.55;
 }
 
+/* Marketplace structure: same station language, practical catalog controls. */
+.content-section {
+  padding-top: var(--section-gap);
+}
+
+.catalog-tools__intro,
+.account__header,
+.checkout__panel {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.catalog-tools__intro p,
+.account__header p,
+.checkout__panel > div:first-child p {
+  max-width: 42ch;
+  margin: 0 0 0.2rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.catalog-tools__intro h2,
+.account__header h2,
+.checkout__panel h2 {
+  margin: 0;
+  font-size: clamp(3.2rem, 6vw, 6.2rem);
+  line-height: 0.86;
+}
+
+.catalog-tools__panel,
+.account__panel,
+.checkout__panel {
+  margin-top: 1.5rem;
+  padding: clamp(1rem, 2.4vw, 2rem);
+}
+
+.catalog-tools__categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-bottom: 1.2rem;
+  border-bottom: 1px solid rgba(244, 239, 232, 0.12);
+}
+
+.catalog-tools__categories .nyxo-action,
+.trade-url .nyxo-action,
+.checkout__submit {
+  min-height: 42px;
+}
+
+.catalog-tools__categories .nyxo-action[aria-pressed='true'] {
+  border-color: rgba(255, 74, 0, 0.72);
+  color: var(--paper);
+  box-shadow: inset 3px 0 0 var(--orange);
+}
+
+.catalog-tools__search {
+  display: grid;
+  gap: 0.55rem;
+  max-width: 680px;
+  margin-top: 1.2rem;
+}
+
+.catalog-tools__search span,
+.coin-converter span,
+.trade-url label,
+.checkout__form > label {
+  color: var(--muted-dark);
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.catalog-tools__search input,
+.coin-converter input,
+.trade-url input,
+.checkout__form > input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 0.8rem;
+  border: 1px solid rgba(244, 239, 232, 0.2);
+  border-radius: 3px;
+  outline: 0;
+  background: rgba(13, 8, 15, 0.72);
+  color: var(--paper);
+  font: inherit;
+}
+
+.catalog-tools__search input:focus,
+.coin-converter input:focus,
+.trade-url input:focus,
+.checkout__form > input:focus {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 2px rgba(255, 74, 0, 0.16);
+}
+
+.catalog-tools__search small,
+.trade-url small {
+  color: var(--muted-dark);
+  font-size: 0.72rem;
+}
+
+.coin-converter {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(170px, 220px) auto;
+  gap: 1rem;
+  align-items: end;
+  margin-top: 1.4rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(244, 239, 232, 0.12);
+}
+
+.coin-converter > div,
+.coin-converter label {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.coin-converter strong,
+.coin-converter output {
+  color: var(--yellow);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.account__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin-top: 1.5rem;
+}
+
+.account-module {
+  display: grid;
+  gap: 0.55rem;
+  min-height: 132px;
+  padding: 1rem;
+  border: 1px solid rgba(244, 239, 232, 0.13);
+  background: rgba(13, 8, 15, 0.38);
+}
+
+.account-module__label {
+  color: var(--muted-dark);
+  font-size: 0.68rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.account-module strong {
+  font-size: 1.15rem;
+}
+
+.account-module a {
+  align-self: end;
+  color: var(--yellow);
+  font-size: 0.78rem;
+}
+
+.account-module__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.account-module__actions button {
+  padding: 0.35rem 0.45rem;
+  border: 1px solid rgba(244, 239, 232, 0.2);
+  background: transparent;
+  color: var(--paper);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.65rem;
+}
+
+.account-module__actions button:hover,
+.account-module__actions button:focus-visible {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.account-module small {
+  color: var(--muted-dark);
+  font-size: 0.68rem;
+  line-height: 1.35;
+}
+
+.trade-url {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1.2rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid rgba(244, 239, 232, 0.12);
+}
+
+.trade-url > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.7rem;
+}
+
+.checkout__panel {
+  align-items: start;
+}
+
+.checkout__form {
+  display: grid;
+  gap: 0.7rem;
+  width: min(100%, 560px);
+}
+
+.checkout__consent {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem;
+  align-items: start;
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+.checkout__consent input {
+  accent-color: var(--orange);
+  margin-top: 0.16rem;
+}
+
+.checkout__submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
+  transform: none;
+}
+
+.site-footer__payments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0.8rem 0;
+}
+
+.site-footer__payments span {
+  padding: 0.25rem 0.45rem;
+  border: 1px solid rgba(244, 239, 232, 0.2);
+  color: var(--muted);
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.site-footer__legal {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) minmax(0, 0.9fr);
+  gap: 0.65rem 2rem;
+  padding: 1rem 0 1.35rem;
+  border-top: 1px solid rgba(244, 239, 232, 0.12);
+  color: var(--muted-dark);
+  font-size: 0.68rem;
+  line-height: 1.4;
+}
+
+.site-footer__legal p {
+  margin: 0;
+}
+
+.site-footer__legal p:first-child {
+  color: var(--muted);
+}
+
+.site-footer__legal p:first-child strong {
+  color: var(--orange);
+}
+
+.site-footer__legal p:nth-child(2) {
+  grid-column: 1 / 2;
+}
+
+.site-footer__legal p:nth-child(3) {
+  grid-column: 2 / 4;
+}
+
+.site-footer__legal p:nth-child(4) {
+  grid-column: 1 / 3;
+}
+
+.site-footer__legal a {
+  color: var(--paper);
+}
+
+.site-footer__legal a:hover,
+.site-footer__legal a:focus-visible {
+  color: var(--orange);
+}
+
+.site-footer__legal .site-footer__payments {
+  grid-column: 3;
+  grid-row: 1 / span 3;
+  align-self: start;
+  margin: 0;
+}
+
+.site-footer__legal-anchor {
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(244, 239, 232, 0.09);
+  color: rgba(244, 239, 232, 0.46);
+  font-size: 0.62rem;
+}
+
+.site-footer__legal-anchor:nth-last-child(4) {
+  grid-column: 1;
+}
+
+.site-footer__legal-anchor:nth-last-child(3) {
+  grid-column: 2;
+}
+
+.site-footer__legal-anchor:nth-last-child(2) {
+  grid-column: 3;
+}
+
+.site-footer__legal-anchor:last-child {
+  grid-column: 3;
+}
+
 .site-footer {
   position: relative;
   isolation: isolate;
@@ -1848,6 +2177,46 @@ details[open] .status-lamp {
 }
 
 @media (max-width: 860px) {
+  .catalog-tools__intro,
+  .account__header,
+  .checkout__panel {
+    display: grid;
+    align-items: start;
+  }
+
+  .coin-converter {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .coin-converter output {
+    grid-column: 1 / -1;
+  }
+
+  .account__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .catalog-tools__panel,
+  .account__panel,
+  .checkout__panel {
+    padding: 1rem;
+  }
+
+  .catalog-tools__intro h2,
+  .account__header h2,
+  .checkout__panel h2 {
+    font-size: clamp(2.8rem, 15vw, 4.5rem);
+  }
+
+  .coin-converter,
+  .trade-url > div {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 860px) {
   .site-footer__statement {
     grid-template-columns: 1fr;
     gap: 2rem;
@@ -1869,6 +2238,26 @@ details[open] .status-lamp {
 
   .site-footer__lockup b {
     display: none;
+  }
+
+  .site-footer__legal {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .site-footer__legal p:nth-child(2),
+  .site-footer__legal p:nth-child(3),
+  .site-footer__legal p:nth-child(4),
+  .site-footer__legal .site-footer__payments,
+  .site-footer__legal-anchor:nth-last-child(4),
+  .site-footer__legal-anchor:nth-last-child(3),
+  .site-footer__legal-anchor:nth-last-child(2),
+  .site-footer__legal-anchor:last-child {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .site-footer__legal .site-footer__payments {
+    align-self: start;
   }
 }
 
@@ -1925,6 +2314,17 @@ details[open] .status-lamp {
 
   .site-footer__lockup b {
     bottom: 0.9rem;
+  }
+
+  .site-footer__legal {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+    padding-top: 0.85rem;
+    font-size: 0.66rem;
+  }
+
+  .site-footer__legal .site-footer__payments {
+    margin-top: 0.25rem;
   }
 
 }

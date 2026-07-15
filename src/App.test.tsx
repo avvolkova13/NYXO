@@ -78,7 +78,8 @@ describe('NYXO landing page', () => {
       'Поддержка',
       'Пользовательское соглашение',
       'Политика конфиденциальности',
-      'Политика cookie',
+      'Условия возврата',
+      'Честная игра',
     ]) {
       expect(within(footer).getByRole('link', { name: label })).toBeInTheDocument()
     }
