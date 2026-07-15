@@ -367,7 +367,7 @@ export function Hero() {
             <div className="hero-index__scanner" aria-hidden="true">
               <img
                 className="hero-index__rifle-thumb"
-                src="/assets/hero/m4a1s-printstream.png"
+                src={`${import.meta.env.BASE_URL}assets/hero/m4a1s-printstream.png`}
                 alt=""
               />
               <i /><i /><i />

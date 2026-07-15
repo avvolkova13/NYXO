@@ -13,6 +13,8 @@ type RifleModelProps = {
   inspecting: boolean
 }
 
+const rifleAsset = (fileName: string) => `${import.meta.env.BASE_URL}assets/hero/m4a1/${fileName}`
+
 export function RifleModel({ active, inspecting }: RifleModelProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [ready, setReady] = useState(false)
@@ -116,9 +118,9 @@ export function RifleModel({ active, inspecting }: RifleModelProps) {
       colorMap.flipY = false
 
       const textureLoader = new THREE.TextureLoader()
-      const normalMap = textureLoader.load('/assets/hero/m4a1/M4A1_Normal.png')
-      const roughnessMap = textureLoader.load('/assets/hero/m4a1/M4A1_Roughness.png')
-      const metalnessMap = textureLoader.load('/assets/hero/m4a1/M4A1_Metallic.png')
+      const normalMap = textureLoader.load(rifleAsset('M4A1_Normal.png'))
+      const roughnessMap = textureLoader.load(rifleAsset('M4A1_Roughness.png'))
+      const metalnessMap = textureLoader.load(rifleAsset('M4A1_Metallic.png'))
       const detailMaps = [normalMap, roughnessMap, metalnessMap]
       detailMaps.forEach((texture) => {
         texture.flipY = false
@@ -145,7 +147,7 @@ export function RifleModel({ active, inspecting }: RifleModelProps) {
       })
 
       const loader = new FBXLoader()
-      loader.setResourcePath('/assets/hero/m4a1/')
+      loader.setResourcePath(`${import.meta.env.BASE_URL}assets/hero/m4a1/`)
       let model: InstanceType<typeof THREE.Group> | null = null
       let revealed = false
       let localBounds: MotionBounds | null = null
@@ -194,7 +196,7 @@ export function RifleModel({ active, inspecting }: RifleModelProps) {
 
       // CC0 M4A1 base mesh by nisu / 3dmodelscc0.com, distributed via OpenGameArt.
       loader.load(
-        '/assets/hero/m4a1/M4A1.fbx',
+        rifleAsset('M4A1.fbx'),
         (loaded) => {
           if (cancelled) return
 
