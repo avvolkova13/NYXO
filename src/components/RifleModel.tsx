@@ -364,7 +364,7 @@ export function RifleModel({ active, inspecting }: RifleModelProps) {
     >
       <img
         className="rifle-3d__fallback"
-        src="/assets/hero/m4a1s-printstream.png"
+        src={`${import.meta.env.BASE_URL}assets/hero/m4a1s-printstream.png`}
         alt=""
         aria-hidden="true"
       />
