@@ -82,4 +82,37 @@ describe('support tickets', () => {
     expect(second.state.supportTickets).toHaveLength(2)
     expect(second.ticket.number).not.toBe(first.ticket.number)
   })
+
+  it('allocates after the highest stored sequence when tickets are missing or renumbered', () => {
+    const initial = createDefaultMarketplaceState()
+    const existing = createSupportTicket(initial, {
+      category: 'Steam',
+      email: 'buyer@example.com',
+      subject: 'Существующее обращение',
+      message: 'Это обращение уже было сохранено.',
+    }, {
+      now: () => '2026-07-15T08:00:00.000Z',
+      createId: () => 'existing-support',
+    }).ticket
+    const state = {
+      ...initial,
+      supportTickets: [
+        { ...existing, number: 'NYXO-SUP-260715-0007' },
+        { ...existing, id: 'altered-support', number: 'altered-locally' },
+      ],
+    }
+
+    const result = createSupportTicket(state, {
+      category: 'Steam',
+      email: 'buyer@example.com',
+      subject: 'Новое обращение',
+      message: 'Номер не должен совпасть с сохранёнными.',
+    }, {
+      now: () => '2026-07-16T10:20:30.000Z',
+      createId: () => 'new-support',
+    })
+
+    expect(result.ticket.number).toBe('NYXO-SUP-260716-0008')
+    expect(new Set(result.state.supportTickets.map((ticket) => ticket.number)).size).toBe(3)
+  })
 })

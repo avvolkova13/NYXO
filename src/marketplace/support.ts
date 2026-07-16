@@ -70,6 +70,22 @@ function ticketNumber(createdAt: string, sequence: number) {
   return `NYXO-SUP-${year}${month}${day}-${String(sequence).padStart(4, '0')}`
 }
 
+function nextTicketSequence(state: MarketplaceState, createdAt: string) {
+  const highestStoredSequence = state.supportTickets.reduce((highest, ticket) => {
+    const match = ticket.number.match(/^NYXO-SUP-\d{6}-(\d+)$/)
+    if (!match) return highest
+
+    const sequence = Number(match[1])
+    return Number.isSafeInteger(sequence) && sequence > highest ? sequence : highest
+  }, 0)
+  let sequence = Math.max(state.supportTickets.length, highestStoredSequence) + 1
+  if (!Number.isSafeInteger(sequence)) sequence = state.supportTickets.length + 1
+
+  const storedNumbers = new Set(state.supportTickets.map((ticket) => ticket.number))
+  while (storedNumbers.has(ticketNumber(createdAt, sequence))) sequence += 1
+  return sequence
+}
+
 export function createSupportTicket(
   state: MarketplaceState,
   input: SupportTicketInput,
@@ -79,7 +95,7 @@ export function createSupportTicket(
   if (Object.keys(errors).length > 0) throw new SupportTicketValidationError(errors)
 
   const createdAt = options.now?.() ?? new Date().toISOString()
-  const sequence = state.supportTickets.length + 1
+  const sequence = nextTicketSequence(state, createdAt)
   const compactTimestamp = createdAt.replace(/\D/g, '').slice(0, 17)
   const orderNumber = input.orderNumber?.trim()
   const ticket: SupportTicket = {
