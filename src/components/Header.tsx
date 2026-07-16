@@ -21,6 +21,7 @@ export function Header() {
   const cartIsCurrent = window.location.pathname === '/cart'
   const accountIsCurrent = window.location.pathname === '/account'
     || window.location.pathname.startsWith('/account/')
+  const inventoryIsCurrent = window.location.pathname === '/inventory'
 
   return (
     <header className="site-header">
@@ -63,7 +64,11 @@ export function Header() {
         >
           Корзина <span className="site-header__cart-count" aria-hidden="true">{cartCount}</span>
         </a>
-        <a className="inventory-link nyxo-action" href="/#account-inventory">
+        <a
+          className={`inventory-link nyxo-action${inventoryIsCurrent ? ' site-header__nav-link--active' : ''}`}
+          href="/inventory"
+          aria-current={inventoryIsCurrent ? 'page' : undefined}
+        >
           <span className="status-lamp" aria-hidden="true" />
           Инвентарь
         </a>

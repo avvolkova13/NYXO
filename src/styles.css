@@ -3658,6 +3658,304 @@ details[open] .status-lamp {
   }
 }
 
+/* Inventory: Steam-gated local withdrawal station. */
+.inventory-page {
+  min-height: 100vh;
+  overflow-x: clip;
+  color: var(--paper);
+  background:
+    linear-gradient(rgba(244, 239, 232, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(244, 239, 232, 0.035) 1px, transparent 1px),
+    var(--plum-black);
+  background-size: 48px 48px;
+}
+
+.inventory-page__main {
+  width: min(1180px, calc(100% - 48px));
+  min-height: 72vh;
+  margin: 0 auto;
+  padding: 112px 0 96px;
+}
+
+.inventory-page__intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 410px);
+  align-items: end;
+  gap: 10px 40px;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(244, 239, 232, 0.28);
+}
+
+.inventory-page__intro .eyebrow,
+.inventory-page__empty .eyebrow {
+  margin: 0;
+  color: var(--yellow);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.inventory-page__intro h1 {
+  grid-column: 1;
+  margin: 0;
+  font: 650 clamp(4.8rem, 9vw, 8rem)/0.78 'Alumni Sans Variable', sans-serif;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+
+.inventory-page__intro > p:last-child {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  margin: 0;
+  color: rgba(244, 239, 232, 0.64);
+  line-height: 1.6;
+}
+
+.inventory-trade-form {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.7fr) minmax(300px, 1.3fr) auto;
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 18px;
+  padding: 22px;
+  border: 1px solid rgba(244, 239, 232, 0.2);
+  background: rgba(29, 17, 35, 0.94);
+}
+
+.inventory-trade-form > div {
+  display: grid;
+  gap: 6px;
+}
+
+.inventory-trade-form label {
+  font-weight: 650;
+}
+
+.inventory-trade-form p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.inventory-trade-form input {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 0 14px;
+  border: 1px solid rgba(244, 239, 232, 0.24);
+  border-radius: 0;
+  color: var(--paper);
+  background: rgba(7, 4, 10, 0.7);
+  font: inherit;
+}
+
+.inventory-trade-form input:focus-visible {
+  outline: 2px solid var(--yellow);
+  outline-offset: 2px;
+  border-color: var(--yellow);
+}
+
+.inventory-page__feedback {
+  margin: 0 0 18px;
+  padding: 13px 16px;
+  border: 1px solid rgba(235, 255, 63, 0.55);
+  background: rgba(235, 255, 63, 0.07);
+}
+
+.inventory-page__feedback--error {
+  border-color: var(--orange);
+  background: rgba(127, 35, 22, 0.44);
+}
+
+.inventory-page__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
+}
+
+.inventory-card {
+  display: grid;
+  grid-template-rows: minmax(230px, 0.85fr) auto;
+  min-width: 0;
+  min-height: 560px;
+  border: 1px solid rgba(244, 239, 232, 0.2);
+  background: rgba(22, 13, 27, 0.96);
+}
+
+.inventory-card__media {
+  display: grid;
+  min-height: 230px;
+  overflow: hidden;
+  place-items: center;
+  border-bottom: 1px solid rgba(244, 239, 232, 0.14);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(235, 255, 63, 0.1), transparent 48%),
+    var(--screen);
+}
+
+.inventory-card__media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 290px;
+  object-fit: contain;
+  padding: 20px;
+}
+
+.inventory-card__media span {
+  color: var(--muted-dark);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+}
+
+.inventory-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  padding: 22px;
+}
+
+.inventory-card__status {
+  width: fit-content;
+  padding: 5px 8px;
+  border: 1px solid rgba(235, 255, 63, 0.42);
+  color: var(--yellow);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.inventory-card__status--pending {
+  border-color: rgba(255, 74, 0, 0.7);
+  color: var(--orange);
+}
+
+.inventory-card h2 {
+  margin: 0;
+  overflow-wrap: anywhere;
+  font: 620 clamp(1.8rem, 3vw, 2.35rem)/0.95 'Alumni Sans Variable', sans-serif;
+  text-transform: uppercase;
+}
+
+.inventory-card__value {
+  color: var(--yellow);
+  font: 650 1.55rem/1 'Alumni Sans Variable', sans-serif;
+}
+
+.inventory-card__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: auto;
+}
+
+.inventory-card__actions button {
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid rgba(244, 239, 232, 0.24);
+  border-radius: 0;
+  color: var(--paper);
+  background: var(--chassis);
+  font: inherit;
+  font-size: 0.72rem;
+}
+
+.inventory-card__actions button:disabled {
+  border-color: rgba(244, 239, 232, 0.12);
+  color: rgba(244, 239, 232, 0.38);
+  background: rgba(244, 239, 232, 0.04);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.inventory-card small {
+  color: var(--muted-dark);
+  line-height: 1.45;
+}
+
+.inventory-page__empty {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  min-height: 340px;
+  align-content: center;
+  padding: clamp(28px, 6vw, 72px);
+  border: 1px solid rgba(244, 239, 232, 0.2);
+  background: rgba(22, 13, 27, 0.96);
+}
+
+.inventory-page__empty h2 {
+  margin: 0;
+  font: 620 clamp(3rem, 7vw, 5.4rem)/0.9 'Alumni Sans Variable', sans-serif;
+  text-transform: uppercase;
+}
+
+.inventory-page__empty > p:not(.eyebrow) {
+  margin: 0;
+  color: var(--muted);
+}
+
+@media (max-width: 860px) {
+  .inventory-trade-form {
+    grid-template-columns: 1fr auto;
+  }
+
+  .inventory-trade-form > div {
+    grid-column: 1 / -1;
+  }
+
+  .inventory-page__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .inventory-page__main {
+    width: min(100% - 28px, 1180px);
+    padding: 86px 0 70px;
+  }
+
+  .inventory-page__intro {
+    display: block;
+  }
+
+  .inventory-page__intro h1 {
+    margin-top: 8px;
+    font-size: clamp(4rem, 19vw, 6.2rem);
+  }
+
+  .inventory-page__intro > p:last-child {
+    margin-top: 18px;
+  }
+
+  .inventory-trade-form,
+  .inventory-card__actions {
+    grid-template-columns: 1fr;
+  }
+
+  .inventory-page__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inventory-trade-form > div {
+    grid-column: auto;
+  }
+
+  .inventory-trade-form .nyxo-action {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .inventory-card {
+    min-height: 0;
+  }
+}
+
 /* Keep the consent gate visibly inert after shared action hover/focus rules resolve. */
 .top-up-form .top-up-form__submit:disabled,
 .top-up-form .top-up-form__submit:disabled:hover,

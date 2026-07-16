@@ -133,7 +133,7 @@ describe('NYXO landing page', () => {
 
     expect(within(header).getByRole('link', { name: 'Инвентарь' })).toHaveAttribute(
       'href',
-      '/#account-inventory',
+      '/inventory',
     )
     expect(within(footer).getByRole('link', { name: 'Личный кабинет' })).toHaveAttribute(
       'href',
