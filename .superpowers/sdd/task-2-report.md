@@ -55,3 +55,11 @@ Complete. The product inspection route now uses the shared marketplace cart, mig
 - `App.tsx` was not changed: the product route already resolves correctly, while CartPage remains intentionally reserved for Task 3.
 - Unrelated pre-existing `.superpowers/sdd` working-tree edits were left untouched and excluded from the task commit.
 - No blocking concerns.
+
+## Approved follow-up: slug-transition feedback reset
+
+- Added a mounted-route rerender regression before production changes.
+- RED: `npm test -- --run src/catalog/ProductPreviewPage.test.tsx` — exit 1; the old product's add confirmation remained visible after switching to a new slug.
+- GREEN: product-specific `notice` now resets when `slug` changes; shared marketplace cart state is not cleared.
+- Focused verification: `npm test -- --run src/catalog/ProductPreviewPage.test.tsx` — exit 0; 1 file passed, 7 tests passed.
+- Type verification: `npm run typecheck` — exit 0.

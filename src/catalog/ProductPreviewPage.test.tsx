@@ -90,6 +90,24 @@ describe('ProductPreviewPage', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Не удалось сохранить')
   })
 
+  it('clears product-specific feedback when the mounted route changes slug', async () => {
+    const firstProduct = products[0]
+    const nextProduct = products[1]
+    const user = userEvent.setup()
+    const { rerender } = render(<ProductPreviewPage slug={firstProduct.slug} />)
+
+    await user.click(
+      screen.getByRole('button', { name: `Добавить ${firstProduct.name} в корзину` }),
+    )
+    expect(screen.getByRole('status')).toHaveTextContent(firstProduct.name)
+
+    rerender(<ProductPreviewPage slug={nextProduct.slug} />)
+
+    expect(screen.getByRole('heading', { level: 1, name: nextProduct.name })).toBeInTheDocument()
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    expect(readMarketplaceState().cartProductIds).toEqual([firstProduct.id])
+  })
+
   it('migrates valid legacy ids once without duplicates and removes the retired key', () => {
     const product = products[0]
     const secondProduct = products[1]

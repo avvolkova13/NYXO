@@ -28,6 +28,10 @@ export function ProductPreviewPage({ slug }: ProductPreviewPageProps) {
     migrateLegacyCartIds()
   }, [])
 
+  useEffect(() => {
+    setNotice('')
+  }, [slug])
+
   if (!product) {
     return (
       <div className="product-preview-page product-preview-page--missing">
