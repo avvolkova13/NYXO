@@ -3,6 +3,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import App from './App'
 import { products } from './data/products'
+import {
+  createDefaultMarketplaceState,
+  replaceMarketplaceState,
+} from './marketplace/marketplaceStore'
 import { handleInternalLinkClick } from './router/useAppRoute'
 
 afterEach(() => {
@@ -70,6 +74,25 @@ describe('NYXO landing page', () => {
     expect(
       screen.getByRole('heading', { level: 1, name: products[0].name }),
     ).toBeInTheDocument()
+  })
+
+  it('renders the cart route and synchronizes the active Header count', () => {
+    const cartIds = [products[0].id, products[1].id]
+    replaceMarketplaceState({
+      ...createDefaultMarketplaceState(),
+      balanceCoins: 50_000,
+      cartProductIds: cartIds,
+    })
+    window.history.replaceState({}, '', '/cart')
+
+    render(<App />)
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Корзина' })).toBeInTheDocument()
+    const cartLink = within(document.querySelector('.site-header')!).getByRole('link', {
+      name: `Корзина ${cartIds.length} товаров`,
+    })
+    expect(cartLink).toHaveAttribute('href', '/cart')
+    expect(cartLink).toHaveAttribute('aria-current', 'page')
   })
 
   it.each([

@@ -1,6 +1,10 @@
+import { useMarketplaceState } from '../marketplace/useMarketplaceState'
+
 export function Header() {
+  const marketplaceState = useMarketplaceState()
   const catalogIsCurrent = window.location.pathname === '/catalog'
     || window.location.pathname.startsWith('/catalog/')
+  const cartIsCurrent = window.location.pathname === '/cart'
 
   return (
     <header className="site-header">
@@ -19,6 +23,13 @@ export function Header() {
           <a href="/#popular">Популярное</a>
           <a href="/#how">Как это работает</a>
           <a href="/#faq">FAQ</a>
+          <a
+            className={cartIsCurrent ? 'site-header__nav-link--active' : undefined}
+            href="/cart"
+            aria-current={cartIsCurrent ? 'page' : undefined}
+          >
+            Корзина <span className="site-header__cart-count" aria-label={`${marketplaceState.cartProductIds.length} товаров`}>{marketplaceState.cartProductIds.length}</span>
+          </a>
         </nav>
         <a className="inventory-link nyxo-action" href="/#account-inventory">
           <span className="status-lamp" aria-hidden="true" />
