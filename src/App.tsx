@@ -1,4 +1,6 @@
 import { Account } from './components/Account'
+import { CatalogPage } from './catalog/CatalogPage'
+import { ProductPreviewPage } from './catalog/ProductPreviewPage'
 import { Checkout } from './components/Checkout'
 import { FAQ } from './components/FAQ'
 import { Footer } from './components/Footer'
@@ -8,8 +10,9 @@ import { HowItWorks } from './components/HowItWorks'
 import { Inspection } from './components/Inspection'
 import { MarketplaceTools } from './components/MarketplaceTools'
 import { PopularNow } from './components/PopularNow'
+import { useAppRoute } from './router/useAppRoute'
 
-export default function App() {
+function HomePage() {
   return (
     <div className="site-shell">
       <Header />
@@ -26,4 +29,13 @@ export default function App() {
       <Footer />
     </div>
   )
+}
+
+export default function App() {
+  const route = useAppRoute()
+
+  if (route.name === 'catalog') return <CatalogPage />
+  if (route.name === 'product') return <ProductPreviewPage slug={route.slug} />
+
+  return <HomePage />
 }

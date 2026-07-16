@@ -55,7 +55,7 @@ export function PopularNow() {
         </div>
 
         <SignalLink
-          href="#popular"
+          href="/catalog"
           signalLabel="Все предметы"
           variant="compact"
           className="popular-cta"

@@ -6,7 +6,7 @@ export function Header() {
           NYXO
         </a>
         <nav aria-label="Основная навигация">
-          <a href="#popular">Каталог</a>
+          <a href="/catalog">Каталог</a>
           <a href="#popular">Популярное</a>
           <a href="#how">Как это работает</a>
           <a href="#faq">FAQ</a>

@@ -282,7 +282,7 @@ describe('Hero spatial workstation', () => {
 
     expect(
       screen.getByRole('link', { name: 'Перейти в каталог' }),
-    ).toHaveAttribute('href', '#popular')
+    ).toHaveAttribute('href', '/catalog')
   })
 
   it('renders practical workstation data in both peripheral stations', () => {

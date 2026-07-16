@@ -4,7 +4,7 @@ type FooterDestination = {
 }
 
 const primaryDestinations: FooterDestination[] = [
-  { label: 'Каталог', href: '#catalog-tools' },
+  { label: 'Каталог', href: '/catalog' },
   { label: 'Популярное', href: '#popular' },
   { label: 'Как это работает', href: '#how' },
   { label: 'FAQ', href: '#faq' },
@@ -28,11 +28,11 @@ export function Footer() {
       <div className="site-footer__statement">
         <div className="site-footer__statement-copy">
           <p>Ищете свой предмет?</p>
-          <a href="#popular">
+          <a href="/catalog">
             Найдите его в NYXO<span aria-hidden="true">↗</span>
           </a>
         </div>
-        <a className="site-footer__contact" href="#popular">
+        <a className="site-footer__contact" href="/catalog">
           Перейти в каталог <span aria-hidden="true">→</span>
         </a>
       </div>

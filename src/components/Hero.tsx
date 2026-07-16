@@ -400,7 +400,7 @@ export function Hero() {
 
         <div className="hero-actions">
           <SignalLink
-            href="#popular"
+            href="/catalog"
             signalLabel="Каталог"
             onPointerEnter={beginMenuCover}
             onPointerLeave={() => setMenuCovering(false)}
