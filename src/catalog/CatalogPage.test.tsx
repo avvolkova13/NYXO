@@ -1,12 +1,18 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { products } from '../data/products'
-import { readMarketplaceState } from '../marketplace/marketplaceStore'
+import {
+  createDefaultMarketplaceState,
+  readMarketplaceState,
+  replaceMarketplaceState,
+} from '../marketplace/marketplaceStore'
+import { calculateCart, completePurchase } from '../marketplace/purchase'
 import styles from '../styles.css?raw'
 import { defaultCatalogFilters, filterProducts } from './catalogModel'
 import { CatalogPage } from './CatalogPage'
+import { createCatalogOffers, resolveCatalogProducts } from './catalogOffers'
 
 const idleIntersectionObserver = window.IntersectionObserver
 const idleMatchMedia = window.matchMedia
@@ -331,6 +337,72 @@ describe('CatalogPage', () => {
     expect(cards.map((card) => card.getAttribute('data-offer-id'))).toHaveLength(
       new Set(cards.map((card) => card.getAttribute('data-offer-id'))).size,
     )
+  })
+
+  it('keeps an appended offer id and exact price through cart calculation and purchase', async () => {
+    let intersectionCallback: IntersectionObserverCallback | undefined
+
+    class ActiveIntersectionObserver {
+      constructor(callback: IntersectionObserverCallback) {
+        intersectionCallback = callback
+      }
+      observe() {}
+      disconnect() {}
+      unobserve() {}
+    }
+
+    Object.defineProperty(window, 'IntersectionObserver', {
+      configurable: true,
+      value: ActiveIntersectionObserver,
+    })
+    replaceMarketplaceState({
+      ...createDefaultMarketplaceState(),
+      balanceCoins: 100_000,
+      session: {
+        method: 'steam',
+        displayName: 'Игрок NYXO',
+        steamId: 'steam-offer-regression',
+        createdAt: '2026-07-16T10:00:00.000Z',
+      },
+    })
+    const user = userEvent.setup()
+    render(<CatalogPage />)
+
+    act(() => {
+      intersectionCallback?.(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      )
+    })
+
+    const expectedOffer = createCatalogOffers(
+      filterProducts(products, defaultCatalogFilters, 'popular'),
+      1,
+    )[0]
+    const offerCard = screen.getAllByTestId('catalog-product').find(
+      (card) => card.getAttribute('data-offer-id') === expectedOffer.id,
+    )!
+    await user.click(within(offerCard).getByRole('button', { name: /Добавить .* в корзину/ }))
+
+    const cartState = readMarketplaceState()
+    expect(cartState.cartProductIds).toEqual([expectedOffer.id])
+    const resolvedProducts = resolveCatalogProducts(cartState.cartProductIds)
+    const cart = calculateCart(resolvedProducts, cartState.cartProductIds)
+    expect(cart.items[0]).toMatchObject({
+      id: expectedOffer.id,
+      price: expectedOffer.product.price,
+    })
+
+    const purchase = completePurchase(cartState, resolvedProducts, {
+      now: () => '2026-07-16T11:00:00.000Z',
+    })
+    expect(purchase.status).toBe('success')
+    if (purchase.status === 'success') {
+      expect(purchase.order.items[0]).toMatchObject({
+        productId: expectedOffer.id,
+        priceCoins: Math.round(expectedOffer.product.price),
+      })
+    }
   })
 
   it('resets the visible feed after search, sort, and popstate changes', async () => {

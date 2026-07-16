@@ -288,7 +288,7 @@ describe('Hero spatial workstation', () => {
   it('renders practical workstation data in both peripheral stations', () => {
     render(<Hero />)
 
-    expect(screen.getByLabelText('Время станции')).toBeInTheDocument()
+    expect(screen.getByLabelText('Локальное время станции')).toBeInTheDocument()
 
     const index = screen.getByLabelText('Индекс характеристик')
     expect(within(index).getByText('Тип')).toBeInTheDocument()
