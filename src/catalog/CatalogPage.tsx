@@ -13,6 +13,7 @@ import {
   type CatalogSort,
 } from './catalogModel'
 import { CatalogProductCard } from './CatalogProductCard'
+import { migrateLegacyCartIds } from './cartStorage'
 
 const kindOptions: { label: string; value: ProductKind | 'all' }[] = [
   { label: 'Все', value: 'all' },
@@ -53,6 +54,10 @@ export function CatalogPage() {
   const [notice, setNotice] = useState('')
 
   const results = useMemo(() => filterProducts(products, filters, sort), [filters, sort])
+
+  useEffect(() => {
+    migrateLegacyCartIds()
+  }, [])
 
   useEffect(() => {
     if (isLoading) return

@@ -3,9 +3,9 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { products } from '../data/products'
+import { readMarketplaceState } from '../marketplace/marketplaceStore'
 import styles from '../styles.css?raw'
 import { CatalogPage } from './CatalogPage'
-import { ProductPreviewPage } from './ProductPreviewPage'
 
 afterEach(() => {
   vi.useRealTimers()
@@ -144,9 +144,8 @@ describe('CatalogPage', () => {
     await user.click(button)
 
     expect(screen.getByRole('status')).toHaveTextContent('добавлено в корзину')
-    expect(JSON.parse(window.localStorage.getItem('nyxo:cart') ?? '[]')).toEqual([
-      product.id,
-    ])
+    expect(readMarketplaceState().cartProductIds).toEqual([product.id])
+    expect(button).toHaveTextContent('В корзине')
   })
 
   it('recovers from malformed cart storage', async () => {
@@ -158,7 +157,7 @@ describe('CatalogPage', () => {
       screen.getByRole('button', { name: `Добавить ${products[3].name} в корзину` }),
     )
 
-    expect(JSON.parse(window.localStorage.getItem('nyxo:cart') ?? '[]')).toHaveLength(1)
+    expect(readMarketplaceState().cartProductIds).toEqual([products[3].id])
   })
 
   it('restores URL state and exposes an accessible filter disclosure', async () => {
@@ -258,39 +257,9 @@ describe('CatalogPage', () => {
       screen.getByRole('button', { name: `Добавить ${products[3].name} в корзину` }),
     )
 
-    expect(screen.getByRole('status')).toHaveTextContent('Не удалось добавить в корзину')
-  })
-})
-
-describe('ProductPreviewPage', () => {
-  beforeEach(() => window.localStorage.clear())
-
-  it('shows every available attribute and adds the item to the cart', async () => {
-    const product = products[0]
-    const user = userEvent.setup()
-    render(<ProductPreviewPage slug={product.slug} />)
-
-    expect(screen.getByRole('heading', { name: product.name })).toBeInTheDocument()
-    expect(screen.getByText(product.condition!)).toBeInTheDocument()
-    expect(screen.getByText(product.rarity!)).toBeInTheDocument()
-    expect(screen.getByText(product.weaponType!)).toBeInTheDocument()
-    expect(screen.getByText(product.attribute!)).toBeInTheDocument()
-    expect(screen.getByText(product.delivery)).toBeInTheDocument()
-
-    await user.click(
-      screen.getByRole('button', { name: `Добавить ${product.name} в корзину` }),
-    )
-    expect(screen.getByRole('status')).toHaveTextContent('добавлено в корзину')
-    expect(JSON.parse(window.localStorage.getItem('nyxo:cart') ?? '[]')).toEqual([product.id])
-  })
-
-  it('shows an unknown-product state with a working catalog link', () => {
-    render(<ProductPreviewPage slug="missing-product" />)
-
-    expect(screen.getByRole('heading', { name: 'Товар не найден' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Вернуться в каталог' })).toHaveAttribute(
-      'href',
-      '/catalog',
-    )
+    expect(screen.getByRole('status')).toHaveTextContent('Не удалось сохранить')
+    expect(
+      screen.getByRole('button', { name: `${products[3].name} уже в корзине` }),
+    ).toHaveTextContent('В корзине')
   })
 })

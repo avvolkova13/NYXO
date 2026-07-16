@@ -1,6 +1,7 @@
 import type { Product } from '../types/product'
 import { ProductMedia } from '../components/ProductMedia'
 import { formatPrice } from '../components/ProductCard'
+import { useMarketplaceState } from '../marketplace/useMarketplaceState'
 import { addCartProductId } from './cartStorage'
 
 interface CatalogProductCardProps {
@@ -15,6 +16,9 @@ const availabilityLabels: Record<Product['availability'], string> = {
 }
 
 export function CatalogProductCard({ product, onAdded }: CatalogProductCardProps) {
+  const marketplaceState = useMarketplaceState()
+  const isInCart = marketplaceState.cartProductIds.includes(product.id)
+
   return (
     <article className="catalog-product-card product-card-shell" data-testid="catalog-product">
       <div className="product-card product-card--standard">
@@ -41,17 +45,22 @@ export function CatalogProductCard({ product, onAdded }: CatalogProductCardProps
             <button
               className="nyxo-action"
               type="button"
-              aria-label={`Добавить ${product.name} в корзину`}
+              disabled={isInCart}
+              aria-label={
+                isInCart
+                  ? `${product.name} уже в корзине`
+                  : `Добавить ${product.name} в корзину`
+              }
               onClick={() => {
                 const result = addCartProductId(product.id)
                 onAdded(
                   result.ok
                     ? `${product.name} — добавлено в корзину`
-                    : `Не удалось добавить в корзину: ${product.name}`,
+                    : 'Не удалось сохранить корзину. Товар останется в ней до перезагрузки.',
                 )
               }}
             >
-              Добавить в корзину
+              {isInCart ? 'В корзине' : 'Добавить в корзину'}
             </button>
           </div>
         </div>

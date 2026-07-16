@@ -2597,6 +2597,15 @@ details[open] .status-lamp {
   background: var(--orange);
 }
 
+.catalog-product-card__actions button:disabled,
+.product-preview-page button.nyxo-action:disabled {
+  border-color: var(--yellow);
+  background: var(--yellow);
+  color: var(--void);
+  cursor: default;
+  opacity: 1;
+}
+
 .catalog-product-card__actions a:hover,
 .catalog-product-card__actions a:focus-visible {
   background: var(--yellow);
@@ -2659,6 +2668,11 @@ details[open] .status-lamp {
 
 .product-preview-page__breadcrumbs a:hover,
 .product-preview-page__breadcrumbs a:focus-visible {
+  color: var(--yellow);
+}
+
+.product-preview-page__cart-link {
+  margin-left: auto;
   color: var(--yellow);
 }
 
@@ -2733,6 +2747,26 @@ details[open] .status-lamp {
   font-family: 'Alumni Sans Variable', sans-serif;
   font-size: 2.2rem;
   line-height: 1;
+}
+
+.product-preview-page__actions,
+.product-preview-page__missing-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+}
+
+.product-preview-page__secondary-action {
+  border-color: var(--edge);
+  background: var(--chassis-light);
+  color: var(--paper);
+}
+
+.product-preview-page__secondary-action:hover,
+.product-preview-page__secondary-action:focus-visible {
+  border-color: var(--yellow);
+  background: var(--yellow);
+  color: var(--void);
 }
 
 .sr-only {
@@ -2855,6 +2889,11 @@ details[open] .status-lamp {
   }
 
   .catalog-product-card__actions {
+    grid-template-columns: 1fr;
+  }
+
+  .product-preview-page__actions,
+  .product-preview-page__missing-actions {
     grid-template-columns: 1fr;
   }
 

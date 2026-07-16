@@ -1,26 +1,30 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { addCartProductId } from './cartStorage'
+import { products } from '../data/products'
+import {
+  createDefaultMarketplaceState,
+  readMarketplaceState,
+  replaceMarketplaceState,
+} from '../marketplace/marketplaceStore'
+import { addCartProductId, migrateLegacyCartIds } from './cartStorage'
 
 describe('addCartProductId', () => {
-  beforeEach(() => window.localStorage.clear())
+  beforeEach(() => {
+    window.localStorage.clear()
+    replaceMarketplaceState(createDefaultMarketplaceState())
+  })
   afterEach(() => vi.restoreAllMocks())
 
   it('deduplicates product ids', () => {
-    window.localStorage.setItem('nyxo:cart', JSON.stringify(['first', 'first', 'second']))
-
-    expect(addCartProductId('first')).toEqual({ ok: true })
-    expect(JSON.parse(window.localStorage.getItem('nyxo:cart') ?? '[]')).toEqual([
-      'first',
-      'second',
-    ])
+    expect(addCartProductId(products[0].id).ok).toBe(true)
+    expect(addCartProductId(products[0].id).ok).toBe(true)
+    expect(readMarketplaceState().cartProductIds).toEqual([products[0].id])
   })
 
   it('recovers from malformed stored data', () => {
     window.localStorage.setItem('nyxo:cart', '{broken')
-
-    expect(addCartProductId('fresh')).toEqual({ ok: true })
-    expect(JSON.parse(window.localStorage.getItem('nyxo:cart') ?? '[]')).toEqual(['fresh'])
+    expect(migrateLegacyCartIds()).toEqual({ ok: true, migratedIds: [] })
+    expect(window.localStorage.getItem('nyxo:cart')).toBeNull()
   })
 
   it('recovers when reading storage throws and still attempts a clean write', () => {
@@ -29,8 +33,8 @@ describe('addCartProductId', () => {
     })
     const setItem = vi.spyOn(Storage.prototype, 'setItem')
 
-    expect(addCartProductId('fresh')).toEqual({ ok: true })
-    expect(setItem).toHaveBeenCalledWith('nyxo:cart', JSON.stringify(['fresh']))
+    expect(addCartProductId(products[0].id).ok).toBe(true)
+    expect(setItem).toHaveBeenCalled()
   })
 
   it('returns a failure instead of throwing when writing storage fails', () => {
@@ -38,6 +42,22 @@ describe('addCartProductId', () => {
       throw new Error('quota exceeded')
     })
 
-    expect(addCartProductId('fresh')).toEqual({ ok: false })
+    const result = addCartProductId(products[0].id)
+    expect(result.ok).toBe(false)
+    expect(result.state.cartProductIds).toEqual([products[0].id])
+  })
+
+  it('migrates only known product ids, deduplicates them, and removes the legacy key', () => {
+    window.localStorage.setItem(
+      'nyxo:cart',
+      JSON.stringify([products[0].id, products[0].id, products[1].id, 'unknown']),
+    )
+
+    expect(migrateLegacyCartIds()).toEqual({
+      ok: true,
+      migratedIds: [products[0].id, products[1].id],
+    })
+    expect(readMarketplaceState().cartProductIds).toEqual([products[0].id, products[1].id])
+    expect(window.localStorage.getItem('nyxo:cart')).toBeNull()
   })
 })
