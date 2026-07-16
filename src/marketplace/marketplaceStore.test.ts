@@ -63,6 +63,27 @@ describe('marketplaceStore', () => {
     expect(readMarketplaceState()).toEqual(createDefaultMarketplaceState())
   })
 
+  it('drops unknown persisted properties at the v1 trust boundary', () => {
+    const stored = {
+      ...createDefaultMarketplaceState(),
+      injected: 'must-not-survive',
+      preferences: {
+        emailNotifications: true,
+        injectedPreference: 'must-not-survive',
+      },
+    }
+    localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(stored))
+
+    const state = readMarketplaceState()
+    replaceMarketplaceState(state)
+    const persisted = JSON.parse(localStorage.getItem(MARKETPLACE_STORAGE_KEY) ?? '{}')
+
+    expect(state).not.toHaveProperty('injected')
+    expect(state.preferences).toEqual({ emailNotifications: true })
+    expect(persisted).not.toHaveProperty('injected')
+    expect(persisted.preferences).toEqual({ emailNotifications: true })
+  })
+
   it('falls back safely when storage reads throw', () => {
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new DOMException('blocked')

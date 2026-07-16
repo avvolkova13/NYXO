@@ -252,9 +252,73 @@ function validateState(value: unknown): MarketplaceState | null {
     return null
   }
 
+  const state = value as unknown as MarketplaceState
   return {
-    ...(value as unknown as MarketplaceState),
+    version: 1,
+    balanceCoins: state.balanceCoins,
     cartProductIds: [...new Set(value.cartProductIds)],
+    session:
+      state.session === null
+        ? null
+        : state.session.method === 'steam'
+          ? {
+              method: 'steam',
+              displayName: state.session.displayName,
+              createdAt: state.session.createdAt,
+              ...(state.session.steamId === undefined ? {} : { steamId: state.session.steamId }),
+            }
+          : {
+              method: 'email',
+              displayName: state.session.displayName,
+              email: state.session.email,
+              createdAt: state.session.createdAt,
+            },
+    steamTradeUrl: state.steamTradeUrl,
+    orders: state.orders.map((order) => ({
+      id: order.id,
+      number: order.number,
+      createdAt: order.createdAt,
+      items: order.items.map((item) => ({
+        productId: item.productId,
+        name: item.name,
+        priceCoins: item.priceCoins,
+        ...(item.imageSrc === undefined ? {} : { imageSrc: item.imageSrc }),
+        ...(item.category === undefined ? {} : { category: item.category }),
+      })),
+      totalCoins: order.totalCoins,
+      status: order.status,
+    })),
+    payments: state.payments.map((payment) => ({
+      id: payment.id,
+      createdAt: payment.createdAt,
+      kind: payment.kind,
+      amountCoins: payment.amountCoins,
+      status: payment.status,
+      ...(payment.orderId === undefined ? {} : { orderId: payment.orderId }),
+    })),
+    inventory: state.inventory.map((item) => ({
+      id: item.id,
+      productId: item.productId,
+      name: item.name,
+      valueCoins: item.valueCoins,
+      acquiredAt: item.acquiredAt,
+      status: item.status,
+      ...(item.imageSrc === undefined ? {} : { imageSrc: item.imageSrc }),
+    })),
+    supportTickets: state.supportTickets.map((ticket) => ({
+      id: ticket.id,
+      number: ticket.number,
+      createdAt: ticket.createdAt,
+      category: ticket.category,
+      email: ticket.email,
+      subject: ticket.subject,
+      message: ticket.message,
+      status: ticket.status,
+      ...(ticket.orderNumber === undefined ? {} : { orderNumber: ticket.orderNumber }),
+    })),
+    preferences: {
+      emailNotifications: state.preferences.emailNotifications,
+    },
   }
 }
 
