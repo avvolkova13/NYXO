@@ -19,6 +19,8 @@ export function Header() {
   const catalogIsCurrent = window.location.pathname === '/catalog'
     || window.location.pathname.startsWith('/catalog/')
   const cartIsCurrent = window.location.pathname === '/cart'
+  const accountIsCurrent = window.location.pathname === '/account'
+    || window.location.pathname.startsWith('/account/')
 
   return (
     <header className="site-header">
@@ -37,6 +39,13 @@ export function Header() {
           <a href="/#popular">Популярное</a>
           <a href="/#how">Как это работает</a>
           <a href="/#faq">FAQ</a>
+          <a
+            className={accountIsCurrent ? 'site-header__nav-link--active' : undefined}
+            href="/account"
+            aria-current={accountIsCurrent ? 'page' : undefined}
+          >
+            Аккаунт
+          </a>
           <a
             className={`site-header__cart-link--desktop${cartIsCurrent ? ' site-header__nav-link--active' : ''}`}
             href="/cart"

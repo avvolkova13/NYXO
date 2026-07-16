@@ -5,6 +5,7 @@ import { Checkout } from './components/Checkout'
 import { CartPage } from './checkout/CartPage'
 import { TopUpPage } from './balance/TopUpPage'
 import { AuthPage } from './auth/AuthPage'
+import { AccountPage } from './account/AccountPage'
 import { FAQ } from './components/FAQ'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
@@ -42,6 +43,7 @@ export default function App() {
   if (route.name === 'cart') return <CartPage />
   if (route.name === 'top-up') return <TopUpPage />
   if (route.name === 'auth') return <AuthPage />
+  if (route.name === 'account') return <AccountPage section={route.section} />
 
   return <HomePage />
 }
