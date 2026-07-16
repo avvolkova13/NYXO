@@ -9,14 +9,66 @@ import { ProductPreviewPage } from './ProductPreviewPage'
 
 afterEach(() => vi.restoreAllMocks())
 
+function mediaBlockContaining(query: string, selector: string) {
+  const marker = `@media (${query})`
+  let searchFrom = 0
+
+  while (searchFrom < styles.length) {
+    const mediaStart = styles.indexOf(marker, searchFrom)
+    if (mediaStart === -1) break
+
+    const blockStart = styles.indexOf('{', mediaStart + marker.length)
+    let depth = 0
+
+    for (let index = blockStart; index < styles.length; index += 1) {
+      if (styles[index] === '{') depth += 1
+      if (styles[index] === '}') depth -= 1
+
+      if (depth === 0) {
+        const block = styles.slice(blockStart + 1, index)
+        if (block.includes(selector)) return block
+        searchFrom = index + 1
+        break
+      }
+    }
+  }
+
+  throw new Error(`No @media (${query}) block contains ${selector}`)
+}
+
 describe('catalog responsive styles', () => {
-  it('defines desktop, tablet, and mobile catalog structures', () => {
-    expect(styles).toMatch(/\.catalog-page__workspace\s*{[\s\S]*grid-template-columns:/)
-    expect(styles).toMatch(/@media \(max-width: 860px\)[\s\S]*\.catalog-page__grid/)
-    expect(styles).toMatch(/@media \(max-width: 600px\)[\s\S]*\.catalog-page__filters/)
-    expect(styles).toMatch(/\.catalog-page__layout\s*{[\s\S]*grid-template-columns:/)
-    expect(styles).toMatch(/@media \(max-width: 860px\)[\s\S]*\.catalog-results__grid/)
-    expect(styles).toMatch(/@media \(max-width: 600px\)[\s\S]*\.catalog-filters/)
+  it('uses only live catalog selectors for its desktop structure', () => {
+    expect(styles).not.toContain('.catalog-page__workspace')
+    expect(styles).not.toContain('.catalog-page__grid')
+    expect(styles).not.toContain('.catalog-page__filters')
+    expect(styles).toMatch(
+      /\.catalog-page__layout\s*{[^}]*display:\s*grid;[^}]*grid-template-columns:\s*minmax\(220px, 280px\) minmax\(0, 1fr\);/,
+    )
+    expect(styles).toMatch(
+      /\.catalog-results__grid\s*{[^}]*grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\);/,
+    )
+  })
+
+  it('keeps the two-column grid and filter disclosure inside the 860px block', () => {
+    const tablet = mediaBlockContaining('max-width: 860px', '.catalog-results__grid')
+
+    expect(tablet).toMatch(
+      /\.catalog-results__grid\s*{[^}]*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\);/,
+    )
+    expect(tablet).toMatch(/\.catalog-filters\s*{[^}]*display:\s*none;/)
+    expect(tablet).toMatch(/\.catalog-filters--open\s*{[^}]*display:\s*grid;/)
+  })
+
+  it('keeps the one-column grid and mobile touch targets inside the 600px block', () => {
+    const mobile = mediaBlockContaining('max-width: 600px', '.catalog-results__grid')
+
+    expect(mobile).toMatch(
+      /\.catalog-results__grid\s*{[^}]*grid-template-columns:\s*1fr;/,
+    )
+    expect(mobile).toMatch(/\.catalog-filters\s*{[^}]*width:\s*100%;/)
+    expect(mobile).toMatch(
+      /\.product-preview-page__breadcrumbs a\s*{[^}]*min-height:\s*44px;/,
+    )
   })
 })
 

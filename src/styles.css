@@ -2326,11 +2326,6 @@ details[open] .status-lamp {
   display: none;
 }
 
-/* Compatibility hooks retained for the catalog contract; live markup uses layout/grid below. */
-.catalog-page__workspace {
-  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
-}
-
 .catalog-page__layout {
   display: grid;
   grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
@@ -2684,10 +2679,6 @@ details[open] .status-lamp {
 }
 
 @media (max-width: 860px) {
-  .catalog-page__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .catalog-page__layout {
     grid-template-columns: 1fr;
   }
@@ -2730,10 +2721,6 @@ details[open] .status-lamp {
 }
 
 @media (max-width: 600px) {
-  .catalog-page__filters {
-    width: 100%;
-  }
-
   .catalog-page__main,
   .product-preview-page__main,
   .product-preview-page__missing {
@@ -2767,6 +2754,12 @@ details[open] .status-lamp {
   }
 
   .catalog-filters label {
+    min-height: 44px;
+  }
+
+  .product-preview-page__breadcrumbs a {
+    display: inline-flex;
+    align-items: center;
     min-height: 44px;
   }
 
