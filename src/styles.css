@@ -7579,3 +7579,16 @@ details[open] .status-lamp {
     transition: none !important;
   }
 }
+
+/* Preserve a full mobile hit area after every late workstation/header cascade resolves. */
+@media (max-width: 600px) {
+  .site-header .inventory-link,
+  .hero button,
+  .catalog-tools button,
+  .account button,
+  .account .nyxo-action,
+  .checkout .nyxo-action,
+  .support-page .nyxo-action {
+    min-height: 44px;
+  }
+}
