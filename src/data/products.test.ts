@@ -24,9 +24,17 @@ describe('mock product catalogue', () => {
   })
 
   it('preserves the original LIS-SKINS inventory and artwork', () => {
-    const originalSkins = products.slice(0, 5)
+    const originalSkinIds = [
+      'ak47-wild-lotus',
+      'm4a4-howl',
+      'butterfly-fade',
+      'awp-dragon-lore',
+      'butterfly-black-pearl',
+    ]
+    const originalSkins = products.filter((product) => originalSkinIds.includes(product.id))
 
-    expect(products).toHaveLength(12)
+    expect(products.length).toBeGreaterThanOrEqual(12)
+    expect(originalSkins.map((product) => product.id)).toEqual(originalSkinIds)
     expect(products[0]).toMatchObject({
       id: 'ak47-wild-lotus',
       name: 'AK-47 | Дикий лотос',

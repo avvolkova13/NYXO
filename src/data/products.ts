@@ -1,6 +1,6 @@
 import type { Product } from '../types/product'
 
-// Snapshot of real LIS-SKINS offers used while the marketplace API is pending.
+// Mock catalog combining LIS-SKINS offer snapshots with service top-up fixtures.
 export const products: Product[] = [
   {
     id: 'ak47-wild-lotus',
