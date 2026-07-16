@@ -15,6 +15,46 @@ describe('filterProducts', () => {
     expect(result.length).toBeGreaterThan(0)
   })
 
+  it('searches the product category', () => {
+    const item = {
+      ...products[0],
+      name: 'Товар без совпадения',
+      category: 'Коллекционная категория',
+      game: undefined,
+      weaponType: undefined,
+      description: '',
+      searchAliases: [],
+    }
+
+    expect(
+      filterProducts(
+        [item],
+        { ...defaultCatalogFilters, query: 'Коллекционная категория' },
+        'popular',
+      ),
+    ).toEqual([item])
+  })
+
+  it('searches the product name', () => {
+    const item = {
+      ...products[0],
+      name: 'Именной артефакт',
+      category: 'Категория без совпадения',
+      game: undefined,
+      weaponType: undefined,
+      description: '',
+      searchAliases: [],
+    }
+
+    expect(
+      filterProducts(
+        [item],
+        { ...defaultCatalogFilters, query: 'Именной артефакт' },
+        'popular',
+      ),
+    ).toEqual([item])
+  })
+
   it('combines category, availability, and maximum price', () => {
     const result = filterProducts(
       products,
@@ -40,18 +80,33 @@ describe('filterProducts', () => {
     ).toBe(true)
   })
 
-  it('sorts by descending price', () => {
-    const result = filterProducts(products, defaultCatalogFilters, 'price-desc')
+  it('sorts every product by ascending and descending price', () => {
+    const ascending = filterProducts(products, defaultCatalogFilters, 'price-asc')
+    const descending = filterProducts(products, defaultCatalogFilters, 'price-desc')
 
-    expect(result[0].price).toBeGreaterThanOrEqual(result[1].price)
+    expect(
+      ascending.every((item, index) => index === 0 || ascending[index - 1].price <= item.price),
+    ).toBe(true)
+    expect(
+      descending.every((item, index) => index === 0 || descending[index - 1].price >= item.price),
+    ).toBe(true)
   })
 
-  it('sorts by popularity and newest date', () => {
+  it('sorts every product by popularity and newest date', () => {
     const popular = filterProducts(products, defaultCatalogFilters, 'popular')
     const newest = filterProducts(products, defaultCatalogFilters, 'newest')
 
-    expect(popular[0].popularity).toBeGreaterThanOrEqual(popular[1].popularity)
-    expect(Date.parse(newest[0].createdAt)).toBeGreaterThanOrEqual(Date.parse(newest[1].createdAt))
+    expect(
+      popular.every(
+        (item, index) => index === 0 || popular[index - 1].popularity >= item.popularity,
+      ),
+    ).toBe(true)
+    expect(
+      newest.every(
+        (item, index) =>
+          index === 0 || Date.parse(newest[index - 1].createdAt) >= Date.parse(item.createdAt),
+      ),
+    ).toBe(true)
   })
 
   it('filters by condition', () => {
@@ -96,11 +151,28 @@ describe('catalog URL state', () => {
     )
   })
 
-  it('falls back from unknown sort and malformed maximum prices', () => {
-    expect(parseCatalogState('sort=surprise&maxPrice=12oops')).toEqual({
-      filters: defaultCatalogFilters,
-      sort: 'popular',
-    })
+  it('falls back from an unknown sort', () => {
+    expect(parseCatalogState('sort=surprise').sort).toBe('popular')
+  })
+
+  it.each([
+    ['malformed', '12oops'],
+    ['empty', ''],
+    ['non-finite', 'Infinity'],
+    ['negative', '-1'],
+  ])('falls back from a %s maximum price', (_case, maxPrice) => {
+    expect(parseCatalogState(`maxPrice=${maxPrice}`).filters.maxPrice).toBe(
+      defaultCatalogFilters.maxPrice,
+    )
+  })
+
+  it('accepts repeated array parameters', () => {
+    const restored = parseCatalogState(
+      'kinds=skin&kinds=gpt-topup&categories=%D0%9D%D0%BE%D0%B6&categories=%D0%90%D0%B2%D1%82%D0%BE%D0%BC%D0%B0%D1%82',
+    )
+
+    expect(restored.filters.kinds).toEqual(['skin', 'gpt-topup'])
+    expect(restored.filters.categories).toEqual(['Нож', 'Автомат'])
   })
 
   it('ignores unknown product kinds and availability values', () => {
