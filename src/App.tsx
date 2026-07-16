@@ -8,6 +8,7 @@ import { AuthPage } from './auth/AuthPage'
 import { AccountPage } from './account/AccountPage'
 import { InventoryPage } from './inventory/InventoryPage'
 import { SupportPage } from './support/SupportPage'
+import { LegalPage } from './legal/LegalPage'
 import { FAQ } from './components/FAQ'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
@@ -48,6 +49,7 @@ export default function App() {
   if (route.name === 'account') return <AccountPage section={route.section} />
   if (route.name === 'inventory') return <InventoryPage />
   if (route.name === 'support') return <SupportPage />
+  if (route.name === 'legal') return <LegalPage document={route.document} />
 
   return <HomePage />
 }

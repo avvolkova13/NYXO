@@ -31,4 +31,15 @@ describe('Footer', () => {
 
     expect(screen.getByRole('link', { name: 'Поддержка' })).toHaveAttribute('href', '/support')
   })
+
+  it.each([
+    ['Пользовательское соглашение', '/legal/terms'],
+    ['Политика конфиденциальности', '/legal/privacy'],
+    ['Условия возврата', '/legal/refunds'],
+    ['Честная игра', '/legal/fair-play'],
+  ])('links %s to its document route', (label, href) => {
+    render(<Footer />)
+
+    expect(screen.getByRole('link', { name: label })).toHaveAttribute('href', href)
+  })
 })

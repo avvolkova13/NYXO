@@ -249,4 +249,16 @@ describe('NYXO landing page', () => {
       expect(within(footer).getByRole('link', { name: label })).toBeInTheDocument()
     }
   })
+
+  it('navigates from the Home footer to a legal document page', () => {
+    vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined)
+    render(<App />)
+
+    fireEvent.click(screen.getByRole('link', { name: 'Политика конфиденциальности' }))
+
+    expect(window.location.pathname).toBe('/legal/privacy')
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Политика конфиденциальности' }),
+    ).toBeInTheDocument()
+  })
 })
