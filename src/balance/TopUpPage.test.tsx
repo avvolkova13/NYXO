@@ -143,4 +143,43 @@ describe('TopUpPage', () => {
     expect(screen.getByRole('heading', { name: 'Баланс пополнен' })).toBeInTheDocument()
     expect(readMarketplaceState().balanceCoins).toBe(7_500)
   })
+
+  it('shows a recoverable overflow error without persisting or changing shared state', async () => {
+    const original = {
+      ...createDefaultMarketplaceState(),
+      balanceCoins: Number.MAX_SAFE_INTEGER,
+      cartProductIds: ['ak47-wild-lotus'],
+      session: {
+        method: 'steam' as const,
+        displayName: 'Overflow tester',
+        createdAt: '2026-07-16T09:00:00.000Z',
+        steamId: 'steam-overflow-test',
+      },
+      inventory: [
+        {
+          id: 'inventory-overflow-test',
+          productId: 'ak47-wild-lotus',
+          name: 'AK-47 | Wild Lotus',
+          valueCoins: 1_850,
+          acquiredAt: '2026-07-16T09:00:00.000Z',
+          status: 'available' as const,
+        },
+      ],
+    }
+    replaceMarketplaceState(original)
+    const setItem = vi.spyOn(Storage.prototype, 'setItem')
+    const user = userEvent.setup()
+    render(<TopUpPage />)
+
+    await user.click(screen.getByRole('radio', { name: '1 000 COINS' }))
+    await user.click(screen.getByRole('checkbox', { name: consentSentence }))
+    await user.click(screen.getByRole('button', { name: 'Пополнить баланс' }))
+
+    expect(screen.getByRole('alert')).toHaveTextContent('итоговый баланс превышает допустимый лимит')
+    expect(screen.queryByRole('heading', { name: 'Баланс пополнен' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Вернуться' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Пополнить баланс' })).toBeEnabled()
+    expect(setItem).not.toHaveBeenCalled()
+    expect(readMarketplaceState()).toEqual(original)
+  })
 })

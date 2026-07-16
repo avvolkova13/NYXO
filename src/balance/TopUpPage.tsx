@@ -14,6 +14,7 @@ import {
   MAX_TOP_UP_COINS,
   MIN_TOP_UP_COINS,
   TOP_UP_PACKAGES,
+  TopUpBalanceOverflowError,
 } from '../marketplace/topUp'
 import { useMarketplaceState } from '../marketplace/useMarketplaceState'
 
@@ -61,10 +62,22 @@ export function TopUpPage() {
     setError('')
 
     const previous: { state: MarketplaceState | null } = { state: null }
-    const result = updateMarketplaceState((current) => {
-      previous.state = current
-      return applyTopUp(current, amountCoins).state
-    })
+    let result
+    try {
+      result = updateMarketplaceState((current) => {
+        previous.state = current
+        return applyTopUp(current, amountCoins).state
+      })
+    } catch (caughtError) {
+      submitting.current = false
+      if (caughtError instanceof TopUpBalanceOverflowError) {
+        setError(
+          'Пополнение не выполнено: итоговый баланс превышает допустимый лимит. Потратьте часть COINS и попробуйте снова.',
+        )
+        return
+      }
+      throw caughtError
+    }
 
     if (!result.persisted) {
       if (previous.state) replaceMarketplaceState(previous.state)

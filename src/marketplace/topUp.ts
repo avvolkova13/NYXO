@@ -14,6 +14,13 @@ export interface TopUpResult {
   payment: MarketplacePayment
 }
 
+export class TopUpBalanceOverflowError extends RangeError {
+  constructor() {
+    super('Итоговый баланс COINS должен быть неотрицательным безопасным целым числом.')
+    this.name = 'TopUpBalanceOverflowError'
+  }
+}
+
 export function isValidTopUpAmount(value: unknown): value is number {
   return (
     typeof value === 'number'
@@ -32,6 +39,11 @@ export function applyTopUp(
     throw new RangeError('Сумма пополнения должна быть целым числом от 100 до 100 000 COINS.')
   }
 
+  const nextBalanceCoins = state.balanceCoins + amountCoins
+  if (!Number.isSafeInteger(nextBalanceCoins) || nextBalanceCoins < 0) {
+    throw new TopUpBalanceOverflowError()
+  }
+
   const createdAt = options.now?.() ?? new Date().toISOString()
   const payment: MarketplacePayment = {
     id: options.createId?.() ?? `top-up-${createdAt.replace(/\D/g, '').slice(0, 17)}-${state.payments.length + 1}`,
@@ -42,7 +54,7 @@ export function applyTopUp(
   }
   const nextState: MarketplaceState = {
     ...state,
-    balanceCoins: state.balanceCoins + amountCoins,
+    balanceCoins: nextBalanceCoins,
     payments: [...state.payments, payment],
   }
 

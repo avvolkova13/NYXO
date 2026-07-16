@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import { createDefaultMarketplaceState } from './marketplaceStore'
-import { applyTopUp, isValidTopUpAmount } from './topUp'
+import { applyTopUp, isValidTopUpAmount, TopUpBalanceOverflowError } from './topUp'
 
 describe('applyTopUp', () => {
   it.each([100, 1_000, 3_000, 5_000, 10_000, 100_000])(
@@ -45,5 +45,18 @@ describe('applyTopUp', () => {
 
     expect(() => applyTopUp(state, 99)).toThrow('100 до 100 000')
     expect(state).toEqual(createDefaultMarketplaceState())
+  })
+
+  it('rejects an unsafe resulting balance before creating a payment or mutating state', () => {
+    const state = {
+      ...createDefaultMarketplaceState(),
+      balanceCoins: Number.MAX_SAFE_INTEGER,
+    }
+    const snapshot = structuredClone(state)
+    const createId = vi.fn(() => 'must-not-be-created')
+
+    expect(() => applyTopUp(state, 100, { createId })).toThrow(TopUpBalanceOverflowError)
+    expect(createId).not.toHaveBeenCalled()
+    expect(state).toEqual(snapshot)
   })
 })
