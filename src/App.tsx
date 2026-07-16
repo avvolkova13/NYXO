@@ -3,6 +3,7 @@ import { CatalogPage } from './catalog/CatalogPage'
 import { ProductPreviewPage } from './catalog/ProductPreviewPage'
 import { Checkout } from './components/Checkout'
 import { CartPage } from './checkout/CartPage'
+import { TopUpPage } from './balance/TopUpPage'
 import { FAQ } from './components/FAQ'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
@@ -38,6 +39,7 @@ export default function App() {
   if (route.name === 'catalog') return <CatalogPage />
   if (route.name === 'product') return <ProductPreviewPage slug={route.slug} />
   if (route.name === 'cart') return <CartPage />
+  if (route.name === 'top-up') return <TopUpPage />
 
   return <HomePage />
 }

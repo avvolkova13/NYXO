@@ -94,6 +94,15 @@ describe('NYXO landing page', () => {
     expect(cartLink).toHaveAccessibleName(`Корзина, ${cartIds.length} товара`)
   })
 
+  it('renders the consent-gated COINS top-up route on direct load', () => {
+    window.history.replaceState({}, '', '/balance/top-up?returnTo=%2Fcart&needed=400')
+
+    render(<App />)
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Пополнить баланс' })).toBeInTheDocument()
+    expect(screen.getByText('Для заказа не хватает 400 COINS. Выберите сумму пополнения.')).toBeInTheDocument()
+  })
+
   it.each([
     ['/catalog', 'catalog'],
     [`/catalog/${products[0].slug}`, 'product'],

@@ -32,6 +32,349 @@
   --ease-physical: cubic-bezier(0.2, 0.8, 0.3, 1);
 }
 
+/* COINS top-up: a compact two-stage payment console with an explicit mock boundary. */
+.top-up-page {
+  min-height: 100vh;
+  color: var(--paper);
+  background:
+    linear-gradient(rgba(244, 239, 232, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(244, 239, 232, 0.035) 1px, transparent 1px),
+    var(--plum-black);
+  background-size: 48px 48px;
+}
+
+.top-up-page__main {
+  width: min(1080px, calc(100% - 48px));
+  min-height: 70vh;
+  margin: 0 auto;
+  padding: 132px 0 96px;
+}
+
+.top-up-page__intro {
+  display: grid;
+  grid-template-columns: 1fr minmax(260px, 420px);
+  align-items: end;
+  gap: 12px 40px;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(244, 239, 232, 0.28);
+}
+
+.top-up-page__intro .eyebrow,
+.top-up-success .eyebrow {
+  margin: 0;
+  color: var(--yellow);
+  font-size: 0.76rem;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+}
+
+.top-up-page__intro h1,
+.top-up-success h1 {
+  grid-column: 1;
+  margin: 0;
+  font: 650 clamp(4.6rem, 9vw, 8rem)/0.78 'Alumni Sans Variable', sans-serif;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+
+.top-up-page__intro > p:last-child {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  margin: 0;
+  color: rgba(244, 239, 232, 0.66);
+  line-height: 1.6;
+}
+
+.top-up-page__shortage,
+.top-up-page__error {
+  margin: 0 0 20px;
+  padding: 14px 18px;
+  border: 1px solid rgba(235, 255, 63, 0.65);
+  color: var(--paper);
+  background: rgba(235, 255, 63, 0.07);
+}
+
+.top-up-page__error {
+  border-color: var(--orange);
+  background: rgba(127, 35, 22, 0.44);
+}
+
+.top-up-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1.22fr) minmax(320px, 0.78fr);
+  border: 1px solid rgba(244, 239, 232, 0.24);
+  background: rgba(29, 17, 35, 0.96);
+}
+
+.top-up-form__amount,
+.top-up-form__confirm {
+  display: grid;
+  align-content: start;
+  gap: 22px;
+  padding: clamp(24px, 4vw, 42px);
+}
+
+.top-up-form__confirm {
+  border-left: 1px solid rgba(244, 239, 232, 0.2);
+  background: rgba(10, 6, 16, 0.4);
+}
+
+.top-up-form__section-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.top-up-form__section-heading > span {
+  color: var(--orange);
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+}
+
+.top-up-form__section-heading h2 {
+  margin: 0;
+  font: 620 2rem/1 'Alumni Sans Variable', sans-serif;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.top-up-packages {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.top-up-packages legend {
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.top-up-package {
+  position: relative;
+  display: grid;
+  min-height: 62px;
+  place-items: center;
+  border: 1px solid rgba(244, 239, 232, 0.22);
+  cursor: pointer;
+}
+
+.top-up-package:has(input:checked) {
+  border-color: var(--yellow);
+  color: var(--yellow);
+  background: rgba(235, 255, 63, 0.08);
+}
+
+.top-up-package:has(input:focus-visible) {
+  outline: 2px solid var(--orange);
+  outline-offset: 3px;
+}
+
+.top-up-package input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.top-up-package span {
+  font-size: 0.88rem;
+  font-weight: 750;
+}
+
+.top-up-custom {
+  display: grid;
+  gap: 8px;
+}
+
+.top-up-custom > span {
+  font-size: 0.82rem;
+  font-weight: 680;
+}
+
+.top-up-custom input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 14px;
+  border: 1px solid rgba(244, 239, 232, 0.3);
+  border-radius: 0;
+  color: var(--paper);
+  background: var(--screen);
+  font: 700 1rem/1 'Golos Text Variable', sans-serif;
+}
+
+.top-up-custom input:focus-visible {
+  border-color: var(--orange);
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+.top-up-custom input[aria-invalid='true'] {
+  border-color: var(--orange);
+}
+
+.top-up-custom small,
+.top-up-form__validation,
+.top-up-form__disabled-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
+.top-up-form__validation {
+  color: #ff9b76;
+}
+
+.top-up-form__mock-label {
+  margin: 0;
+  padding: 12px;
+  border-left: 3px solid var(--yellow);
+  color: var(--yellow);
+  background: rgba(235, 255, 63, 0.06);
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.top-up-form__confirm dl,
+.top-up-success dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.top-up-form__confirm dl div,
+.top-up-success dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(244, 239, 232, 0.16);
+}
+
+.top-up-form__confirm dt,
+.top-up-success dt {
+  color: var(--muted);
+}
+
+.top-up-form__confirm dd,
+.top-up-success dd {
+  margin: 0;
+  font-weight: 750;
+}
+
+.top-up-consent {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  min-height: 44px;
+  gap: 11px;
+  align-items: start;
+  cursor: pointer;
+}
+
+.top-up-consent input {
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--orange);
+}
+
+.top-up-consent span {
+  color: rgba(244, 239, 232, 0.76);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.top-up-consent a {
+  color: var(--paper);
+  text-underline-offset: 3px;
+}
+
+.top-up-consent a:hover,
+.top-up-consent a:focus-visible {
+  color: var(--yellow);
+}
+
+.top-up-form__submit,
+.top-up-success .nyxo-action {
+  display: inline-flex;
+  min-height: 52px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  text-decoration: none;
+}
+
+.top-up-form__submit {
+  width: 100%;
+  cursor: pointer;
+}
+
+.top-up-success {
+  display: grid;
+  max-width: 760px;
+  gap: 22px;
+  padding: clamp(28px, 6vw, 72px);
+  border: 1px solid rgba(244, 239, 232, 0.24);
+  background: rgba(29, 17, 35, 0.96);
+}
+
+.top-up-success > p:not(.eyebrow) {
+  margin: 0;
+  color: var(--muted);
+}
+
+@media (max-width: 760px) {
+  .top-up-page__intro,
+  .top-up-form {
+    grid-template-columns: 1fr;
+  }
+
+  .top-up-page__intro > p:last-child {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .top-up-form__confirm {
+    border-top: 1px solid rgba(244, 239, 232, 0.2);
+    border-left: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .top-up-page__main {
+    width: min(100% - 28px, 1080px);
+    padding: 104px 0 64px;
+  }
+
+  .top-up-page__intro h1,
+  .top-up-success h1 {
+    font-size: clamp(4rem, 22vw, 6rem);
+  }
+
+  .top-up-packages {
+    grid-template-columns: 1fr;
+  }
+
+  .top-up-package,
+  .top-up-custom input,
+  .top-up-form__submit,
+  .top-up-success .nyxo-action {
+    min-height: 48px;
+  }
+
+  .top-up-form__amount,
+  .top-up-form__confirm,
+  .top-up-success {
+    padding: 20px;
+  }
+}
+
 /* Cart: operational checkout surface built from the marketplace station language. */
 .site-header__cart-count {
   display: inline-grid;
@@ -2607,6 +2950,18 @@ details[open] .status-lamp {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
+}
+
+/* Keep the consent gate visibly inert after shared action hover/focus rules resolve. */
+.top-up-form .top-up-form__submit:disabled,
+.top-up-form .top-up-form__submit:disabled:hover,
+.top-up-form .top-up-form__submit:disabled:focus-visible,
+.top-up-form .top-up-form__submit[aria-disabled='true'] {
+  border: 1px solid rgba(244, 239, 232, 0.17);
+  color: rgba(244, 239, 232, 0.32);
+  background: rgba(244, 239, 232, 0.06);
+  cursor: not-allowed;
+  box-shadow: none;
 }
 
 /* Catalog routes: dense marketplace controls in the existing NYXO station system. */
