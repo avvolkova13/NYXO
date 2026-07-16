@@ -16,19 +16,23 @@ Implemented the `/cart` route and its pure purchase transaction. Home and Catalo
 - Successful persistence shows a receipt with the order number and links to `/account/purchases` and `/inventory`.
 - Failed persistence rolls the in-memory transaction back, shows an alert, and never shows a false receipt.
 - Empty cart links back to `/catalog`.
+- Cart mount removes retired/unknown product IDs from shared state while preserving known items; failed cleanup keeps the original snapshot and exposes a working retry.
+- Header counts only unique known products and provides mutually exclusive desktop/mobile Cart controls. The mobile control remains available at 860px and below with a 44px target.
+- Successful receipts are announced through a polite accessible status region, and repeated activation produces no duplicate records or secondary error feedback.
 
 ## TDD evidence
 
 - Initial focused run: RED because `purchase.ts` and `CartPage.tsx` did not exist.
 - Transaction/cart GREEN: 11 tests passed.
 - Persistence rollback assertion: RED with an empty in-memory cart, then GREEN after rollback implementation.
-- Final focused run: 3 files, 23 tests passed.
-- Final full run: 22 files, 172 tests passed.
+- Review hardening: unknown-only/mixed cart state, cleanup retry, mobile Header reachability, receipt announcement, and duplicate feedback tests were observed RED before fixes.
+- Final focused run: 4 files, 29 tests passed.
+- Final full run: 23 files, 178 tests passed.
 
 ## Verification
 
-- `npm test -- --run src/checkout src/marketplace/purchase.test.ts src/App.test.tsx` — passed (23/23).
-- `npm test -- --run` — passed (172/172).
+- `npm test -- --run src/checkout/CartPage.test.tsx src/components/Header.test.tsx src/marketplace/purchase.test.ts src/App.test.tsx` — passed (29/29).
+- `npm test -- --run` — passed (178/178).
 - `npm run typecheck` — passed.
 - `npm run build` — passed.
 - `git diff --check` for Task 3 files — passed.

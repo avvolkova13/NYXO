@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { products } from '../data/products'
 import {
@@ -19,6 +19,10 @@ describe('CartPage', () => {
     window.history.replaceState({}, '', '/cart')
   })
 
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('renders an empty state with a working catalog action', () => {
     replaceMarketplaceState(createDefaultMarketplaceState())
     render(<CartPage />)
@@ -29,6 +33,50 @@ describe('CartPage', () => {
       'href',
       '/catalog',
     )
+  })
+
+  it('cleans an unknown-only cart so it cannot strand shared state', async () => {
+    replaceMarketplaceState({
+      ...createDefaultMarketplaceState(),
+      cartProductIds: ['retired-product'],
+    })
+    render(<CartPage />)
+
+    expect(screen.getByText('Корзина пуста')).toBeInTheDocument()
+    expect(await screen.findByText('Корзина пуста')).toBeInTheDocument()
+    expect(readMarketplaceState().cartProductIds).toEqual([])
+  })
+
+  it('removes unknown ids while preserving known cart products', async () => {
+    replaceMarketplaceState({
+      ...createDefaultMarketplaceState(),
+      cartProductIds: ['retired-product', service.id, 'another-retired-product'],
+    })
+    render(<CartPage />)
+
+    expect(screen.getByText(service.name)).toBeInTheDocument()
+    await screen.findByText(service.name)
+    expect(readMarketplaceState().cartProductIds).toEqual([service.id])
+  })
+
+  it('exposes a retry when unknown-id cleanup cannot be persisted', async () => {
+    replaceMarketplaceState({
+      ...createDefaultMarketplaceState(),
+      cartProductIds: ['retired-product'],
+    })
+    const setItem = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('quota exceeded')
+    })
+    const user = userEvent.setup()
+    render(<CartPage />)
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Не удалось очистить корзину')
+    expect(readMarketplaceState().cartProductIds).toEqual(['retired-product'])
+
+    setItem.mockRestore()
+    await user.click(screen.getByRole('button', { name: 'Повторить очистку' }))
+    expect(readMarketplaceState().cartProductIds).toEqual([])
+    expect(screen.queryByRole('button', { name: 'Повторить очистку' })).not.toBeInTheDocument()
   })
 
   it('removes a shared product row and persists the cart', async () => {
@@ -86,6 +134,7 @@ describe('CartPage', () => {
 
     await user.dblClick(screen.getByRole('button', { name: 'Оплатить заказ' }))
 
+    expect(screen.getByRole('status')).toHaveAccessibleName('Покупка завершена')
     expect(screen.getByRole('heading', { name: 'Покупка завершена' })).toBeInTheDocument()
     expect(screen.getByText(/NYXO-/)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Мои покупки' })).toHaveAttribute(
@@ -98,6 +147,8 @@ describe('CartPage', () => {
     )
     expect(readMarketplaceState().orders).toHaveLength(2)
     expect(readMarketplaceState().payments).toHaveLength(2)
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(screen.queryByText('Условия покупки изменились')).not.toBeInTheDocument()
   })
 
   it('shows a storage error and no false receipt when persistence fails', async () => {

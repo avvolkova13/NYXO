@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Footer } from '../components/Footer'
 import { Header } from '../components/Header'
@@ -19,7 +19,53 @@ export function CartPage() {
   const cart = useMemo(() => calculateCart(products, state.cartProductIds), [state.cartProductIds])
   const [receipt, setReceipt] = useState<MarketplaceOrder | null>(null)
   const [error, setError] = useState('')
+  const [cleanupError, setCleanupError] = useState(false)
   const purchaseInProgress = useRef(false)
+  const attemptedCleanup = useRef<string | null>(null)
+
+  const cleanUnknownProductIds = (current: MarketplaceState) => {
+    const knownIds = calculateCart(products, current.cartProductIds).items.map(
+      (product) => product.id,
+    )
+    if (knownIds.length === current.cartProductIds.length) {
+      setCleanupError(false)
+      return
+    }
+
+    attemptedCleanup.current = current.cartProductIds.join('\u0000')
+    const previous: { state: MarketplaceState | null } = { state: null }
+    const result = updateMarketplaceState((latest) => {
+      previous.state = latest
+      return {
+        ...latest,
+        cartProductIds: calculateCart(products, latest.cartProductIds).items.map(
+          (product) => product.id,
+        ),
+      }
+    })
+
+    if (!result.persisted) {
+      if (previous.state) replaceMarketplaceState(previous.state)
+      setCleanupError(true)
+      return
+    }
+
+    setCleanupError(false)
+  }
+
+  useEffect(() => {
+    const signature = state.cartProductIds.join('\u0000')
+    if (cart.items.length === state.cartProductIds.length) {
+      attemptedCleanup.current = null
+      return
+    }
+    if (attemptedCleanup.current !== signature) cleanUnknownProductIds(state)
+  }, [cart.items.length, state])
+
+  const retryUnknownProductCleanup = () => {
+    attemptedCleanup.current = null
+    cleanUnknownProductIds(state)
+  }
 
   const removeProduct = (productId: string) => {
     setError('')
@@ -71,9 +117,20 @@ export function CartPage() {
       <Header />
       <main className="cart-page__main">
         {error && <p className="cart-page__error" role="alert">{error}</p>}
+        {cleanupError && (
+          <div className="cart-page__error" role="alert">
+            <p>Не удалось очистить корзину от недоступных товаров.</p>
+            <button type="button" onClick={retryUnknownProductCleanup}>Повторить очистку</button>
+          </div>
+        )}
 
         {receipt ? (
-          <section className="cart-receipt" aria-labelledby="cart-receipt-title">
+          <section
+            className="cart-receipt"
+            role="status"
+            aria-live="polite"
+            aria-labelledby="cart-receipt-title"
+          >
             <p className="eyebrow">NYXO / RECEIPT</p>
             <h1 id="cart-receipt-title">Покупка завершена</h1>
             <p>Заказ <strong>{receipt.number}</strong> оплачен в COINS.</p>

@@ -88,11 +88,10 @@ describe('NYXO landing page', () => {
     render(<App />)
 
     expect(screen.getByRole('heading', { level: 1, name: 'Корзина' })).toBeInTheDocument()
-    const cartLink = within(document.querySelector('.site-header')!).getByRole('link', {
-      name: `Корзина ${cartIds.length} товаров`,
-    })
+    const cartLink = document.querySelector('.site-header__cart-link--desktop')
     expect(cartLink).toHaveAttribute('href', '/cart')
     expect(cartLink).toHaveAttribute('aria-current', 'page')
+    expect(cartLink).toHaveAccessibleName(`Корзина, ${cartIds.length} товара`)
   })
 
   it.each([
