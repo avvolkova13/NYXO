@@ -51,7 +51,7 @@ describe('InventoryPage', () => {
     expect(within(card).getByText('Доступен')).toBeInTheDocument()
     expect(within(card).getByText('15 042 COINS')).toBeInTheDocument()
     expect(within(card).getByRole('button', { name: 'Продать M4A4 | Вой' })).toBeDisabled()
-    expect(within(card).getByText(/перепродажа пока недоступна/i)).toBeInTheDocument()
+    expect(within(card).getByText(/баланс COINS изменяется только после подтверждённой операции/i)).toBeInTheDocument()
     expect(screen.queryByText(/₽|руб/i)).not.toBeInTheDocument()
   })
 
@@ -81,6 +81,7 @@ describe('InventoryPage', () => {
     await user.click(screen.getByRole('button', { name: 'Сохранить Trade URL' }))
     expect(screen.getByRole('status')).toHaveTextContent(/Trade URL сохранён/i)
     expect(readMarketplaceState().steamTradeUrl).toBe(validTradeUrl)
+    expect(document.body).not.toHaveTextContent(/мок|локальн|реальный Steam-трейд не создаётся/i)
   })
 
   it('marks withdrawal pending while keeping the COINS balance unchanged', async () => {

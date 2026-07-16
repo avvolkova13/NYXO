@@ -60,7 +60,7 @@ export function OrdersView({ orders }: { orders: MarketplaceOrder[] }) {
       <header className="account-view__heading">
         <p className="eyebrow">ACCOUNT / ORDERS</p>
         <h1 id="account-purchases-title">Покупки</h1>
-        <p>Завершённые заказы из общей локальной истории NYXO.</p>
+        <p>Завершённые заказы из истории покупок NYXO.</p>
       </header>
       <OrdersList orders={orders} />
     </section>

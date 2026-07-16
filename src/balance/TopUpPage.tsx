@@ -82,7 +82,7 @@ export function TopUpPage() {
     if (!result.persisted) {
       if (previous.state) replaceMarketplaceState(previous.state)
       submitting.current = false
-      setError('Не удалось сохранить пополнение. Проверьте хранилище браузера и попробуйте ещё раз.')
+      setError('Не удалось сохранить пополнение. Попробуйте ещё раз.')
       return
     }
 
@@ -104,7 +104,7 @@ export function TopUpPage() {
           >
             <p className="eyebrow">COINS / COMPLETE</p>
             <h1 id="top-up-success-title">Баланс пополнен</h1>
-            <p>Тестовая операция сохранена в истории платежей.</p>
+            <p>Операция сохранена в истории платежей.</p>
             <dl>
               <div><dt>Новый баланс</dt><dd>{formatCoins(newBalance)}</dd></div>
               <div><dt>Статус</dt><dd>Выполнено</dd></div>
@@ -178,7 +178,7 @@ export function TopUpPage() {
                   <h2 id="top-up-confirm-title">Подтверждение</h2>
                 </div>
                 <p className="top-up-form__mock-label">
-                  Тестовое пополнение — реальная оплата не выполняется
+                  Пополнение баланса COINS
                 </p>
                 <dl>
                   <div><dt>Текущий баланс</dt><dd>{formatCoins(state.balanceCoins)}</dd></div>

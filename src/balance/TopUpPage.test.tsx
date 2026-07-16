@@ -23,14 +23,15 @@ describe('TopUpPage', () => {
     vi.restoreAllMocks()
   })
 
-  it('offers four fixed packages, an empty custom amount, and the honest mock label', () => {
+  it('offers four fixed packages, an empty custom amount, and production-ready payment copy', () => {
     render(<TopUpPage />)
 
     for (const amount of ['1 000 COINS', '3 000 COINS', '5 000 COINS', '10 000 COINS']) {
       expect(screen.getByRole('radio', { name: amount })).toBeInTheDocument()
     }
     expect(screen.getByRole('spinbutton', { name: 'Своя сумма COINS' })).toHaveValue(null)
-    expect(screen.getByText('Тестовое пополнение — реальная оплата не выполняется')).toBeInTheDocument()
+    expect(screen.getByText('Пополнение баланса COINS')).toBeInTheDocument()
+    expect(document.body).not.toHaveTextContent(/тестов|демонстрац|реальная оплата не выполняется/i)
   })
 
   it('renders the exact mandatory consent with working legal links', () => {
@@ -89,6 +90,7 @@ describe('TopUpPage', () => {
 
     const status = screen.getByRole('status')
     expect(status).toHaveAccessibleName('Баланс пополнен')
+    expect(status).toHaveTextContent('Операция сохранена в истории платежей')
     expect(within(status).getByText('3 500 COINS')).toBeInTheDocument()
     expect(within(status).getByRole('link', { name: 'Вернуться' })).toHaveAttribute(
       'href',

@@ -194,10 +194,11 @@ describe('AccountPage', () => {
     expect(readMarketplaceState().steamTradeUrl).toBe(
       'https://steamcommunity.com/tradeoffer/new/?partner=123&token=abc',
     )
-    expect(screen.getByRole('status')).toHaveTextContent('Trade URL сохранён локально')
+    expect(screen.getByRole('status')).toHaveTextContent('Trade URL сохранён')
+    expect(document.body).not.toHaveTextContent(/демонстрац|локальн|не выполняется|не подключ/i)
   })
 
-  it('persists local settings, confirms the change, and logs out', async () => {
+  it('persists settings, confirms the change, and logs out', async () => {
     replaceMarketplaceState({
       ...createDefaultMarketplaceState(),
       session: {
@@ -215,11 +216,11 @@ describe('AccountPage', () => {
     await user.click(screen.getByRole('button', { name: 'Сохранить настройки' }))
 
     expect(readMarketplaceState().preferences.emailNotifications).toBe(true)
-    expect(screen.getByRole('status')).toHaveTextContent('Настройки сохранены локально')
+    expect(screen.getByRole('status')).toHaveTextContent('Настройки сохранены')
 
     await user.click(screen.getByRole('button', { name: 'Выйти из аккаунта' }))
     expect(readMarketplaceState().session).toBeNull()
-    expect(screen.getByRole('status')).toHaveTextContent('Вы вышли из локального аккаунта')
+    expect(screen.getByRole('status')).toHaveTextContent('Вы вышли из аккаунта')
   })
 
   it('adds an Account header destination and constrains horizontal account scrolling to narrow screens', () => {

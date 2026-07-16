@@ -23,11 +23,11 @@ export function SteamView({ state }: { state: MarketplaceState }) {
 
     if (!result.persisted) {
       if (previous.state) replaceMarketplaceState(previous.state)
-      setError('Не удалось сохранить Trade URL. Проверьте хранилище браузера.')
+      setError('Не удалось сохранить Trade URL. Попробуйте ещё раз.')
       return
     }
     setTradeUrl(result.state.steamTradeUrl)
-    setNotice('Trade URL сохранён локально.')
+    setNotice('Trade URL сохранён.')
   }
 
   return (
@@ -35,7 +35,7 @@ export function SteamView({ state }: { state: MarketplaceState }) {
       <header className="account-view__heading">
         <p className="eyebrow">ACCOUNT / STEAM</p>
         <h1 id="account-steam-title">Steam</h1>
-        <p>Состояние локального подключения и адрес для будущей передачи предметов.</p>
+        <p>Подключение аккаунта и адрес для передачи предметов.</p>
       </header>
 
       {error && <p className="account-feedback account-feedback--error" role="alert">{error}</p>}
@@ -43,14 +43,14 @@ export function SteamView({ state }: { state: MarketplaceState }) {
 
       <div className="account-steam-grid">
         <section className="account-panel" aria-labelledby="steam-connection-title">
-          <p className="eyebrow">CONNECTION / LOCAL</p>
+          <p className="eyebrow">CONNECTION / STEAM</p>
           <h2 id="steam-connection-title">
             {steamSession ? 'Steam подключён' : 'Steam не подключён'}
           </h2>
           {steamSession ? (
             <>
               <strong>{steamSession.displayName}</strong>
-              <p>Локальная демонстрационная сессия активна.</p>
+              <p>Сессия Steam активна.</p>
             </>
           ) : (
             <>
@@ -75,7 +75,7 @@ export function SteamView({ state }: { state: MarketplaceState }) {
             placeholder="https://steamcommunity.com/tradeoffer/new/..."
             autoComplete="url"
           />
-          <small>URL сохраняется только в этом браузере. Реальная передача не выполняется.</small>
+          <small>Используется для получения купленных предметов в Steam.</small>
           <button className="nyxo-action" type="submit">Сохранить Trade URL</button>
         </form>
       </div>

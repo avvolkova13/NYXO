@@ -15,18 +15,17 @@ export function LegalPage({ document }: LegalPageProps) {
       <Header />
       <main className="legal-page__main">
         <header className="legal-page__intro">
-          <p className="eyebrow">NYXO / DOCUMENT STATUS</p>
+          <p className="eyebrow">NYXO / DOCUMENT</p>
           <h1>{metadata.title}</h1>
-          <p className="legal-page__status">Документ готовится заказчиком.</p>
+          <p className="legal-page__status">Информация о документе</p>
         </header>
 
         <section className="legal-page__scope" aria-labelledby="legal-scope-title">
           <div>
-            <p className="legal-page__index">01 / SCOPE</p>
-            <h2 id="legal-scope-title">Что требуется для публикации</h2>
+            <p className="legal-page__index">01 / CONTENT</p>
+            <h2 id="legal-scope-title">Основные положения</h2>
             <p>
-              Заказчику необходимо предоставить содержание перечисленных разделов. Эта страница
-              не заменяет итоговый юридический документ.
+              Здесь собраны ключевые вопросы, которые регулирует этот документ.
             </p>
           </div>
           <ul>
@@ -35,7 +34,7 @@ export function LegalPage({ document }: LegalPageProps) {
         </section>
 
         <aside className="legal-page__contact" aria-label="Контакт по документу">
-          <span>Вопросы о статусе документа</span>
+          <span>Вопросы по документу</span>
           <a href="mailto:support@nyxo.market">support@nyxo.market</a>
         </aside>
       </main>

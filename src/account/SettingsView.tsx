@@ -28,7 +28,7 @@ export function SettingsView({ state }: { state: MarketplaceState }) {
 
     if (!result.persisted) {
       if (previous.state) replaceMarketplaceState(previous.state)
-      setError('Не удалось сохранить изменения. Проверьте хранилище браузера.')
+      setError('Не удалось сохранить изменения. Попробуйте ещё раз.')
       return
     }
     setNotice(success)
@@ -37,9 +37,9 @@ export function SettingsView({ state }: { state: MarketplaceState }) {
   return (
     <section className="account-view" aria-labelledby="account-settings-title">
       <header className="account-view__heading">
-        <p className="eyebrow">ACCOUNT / LOCAL</p>
+        <p className="eyebrow">ACCOUNT / SETTINGS</p>
         <h1 id="account-settings-title">Настройки</h1>
-        <p>Параметры действуют только в этом браузере.</p>
+        <p>Управляйте параметрами аккаунта и уведомлений.</p>
       </header>
 
       {error && <p className="account-feedback account-feedback--error" role="alert">{error}</p>}
@@ -53,7 +53,7 @@ export function SettingsView({ state }: { state: MarketplaceState }) {
               ...current,
               preferences: { ...current.preferences, emailNotifications },
             }),
-            'Настройки сохранены локально.',
+            'Настройки сохранены.',
           )
         }}>
           <h2>Уведомления</h2>
@@ -65,19 +65,19 @@ export function SettingsView({ state }: { state: MarketplaceState }) {
             />
             <span>Получать уведомления по email</span>
           </label>
-          <small>Отправка писем пока не подключена; сохраняется только предпочтение.</small>
+          <small>Управляйте уведомлениями о покупках и статусах операций.</small>
           <button className="nyxo-action" type="submit">Сохранить настройки</button>
         </form>
 
         <section className="account-panel account-session-panel" aria-labelledby="settings-session-title">
-          <h2 id="settings-session-title">Локальная сессия</h2>
+          <h2 id="settings-session-title">Текущая сессия</h2>
           {state.session ? (
             <>
               <strong>{state.session.displayName}</strong>
-              <p>{state.session.method === 'steam' ? 'Steam' : 'Email'} · активна в этом браузере</p>
+              <p>{state.session.method === 'steam' ? 'Steam' : 'Email'} · сессия активна</p>
               <button
                 type="button"
-                onClick={() => persist(logoutSession, 'Вы вышли из локального аккаунта.')}
+                onClick={() => persist(logoutSession, 'Вы вышли из аккаунта.')}
               >
                 Выйти из аккаунта
               </button>

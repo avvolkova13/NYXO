@@ -52,7 +52,7 @@ export function MarketplaceTools() {
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Пистолет, автомат, нож"
           />
-          <small>{resultCount ? `Найдено позиций: ${resultCount}` : 'Товары появятся после подключения API'}</small>
+          <small>{resultCount ? `Найдено позиций: ${resultCount}` : 'По вашему запросу ничего не найдено'}</small>
         </label>
         <div className="coin-converter" aria-label="Конвертер COINS">
           <div>

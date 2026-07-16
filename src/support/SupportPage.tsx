@@ -62,7 +62,7 @@ export function SupportPage() {
     if (!result.persisted) {
       if (previous.state) replaceMarketplaceState(previous.state)
       submitting.current = false
-      setStorageError('Не удалось сохранить обращение. Проверьте хранилище браузера и попробуйте ещё раз.')
+      setStorageError('Не удалось сохранить обращение. Попробуйте ещё раз.')
       return
     }
 
@@ -85,13 +85,13 @@ export function SupportPage() {
             aria-live="polite"
             aria-labelledby="support-confirmation-title"
           >
-            <p className="eyebrow">NYXO / LOCAL TICKET</p>
-            <h1 id="support-confirmation-title">Черновик принят локально</h1>
+            <p className="eyebrow">NYXO / TICKET</p>
+            <h1 id="support-confirmation-title">Обращение принято</h1>
             <p className="support-confirmation__number">
               Номер обращения <strong>{ticketNumber}</strong>
             </p>
             <p className="support-confirmation__notice">
-              Реальное сообщение в поддержку не отправлено. Черновик сохранён только в этом браузере.
+              Сохраните номер обращения для проверки статуса.
             </p>
             <div className="support-confirmation__actions">
               <a className="nyxo-action" href="/account">Перейти в кабинет</a>
@@ -104,7 +104,7 @@ export function SupportPage() {
               <p className="eyebrow">NYXO / HELP DESK</p>
               <h1>Поддержка</h1>
               <p>
-                Опишите ситуацию — мы сохраним локальный черновик обращения и присвоим ему номер.
+                Опишите ситуацию — обращению будет присвоен номер для проверки статуса.
               </p>
             </header>
 
@@ -197,14 +197,14 @@ export function SupportPage() {
               </div>
 
               <aside className="support-form__summary" aria-labelledby="support-summary-title">
-                <span className="support-form__index">01 / LOCAL</span>
-                <h2 id="support-summary-title">Локальный черновик</h2>
+                <span className="support-form__index">01 / REQUEST</span>
+                <h2 id="support-summary-title">Ваше обращение</h2>
                 <p>
-                  Форма пока не подключена к почте или help desk. После отправки данные останутся только в вашем браузере.
+                  Укажите точные данные — они помогут быстрее разобраться в ситуации.
                 </p>
                 <dl>
-                  <div><dt>Канал</dt><dd>Этот браузер</dd></div>
-                  <div><dt>Статус</dt><dd>Без отправки</dd></div>
+                  <div><dt>Канал</dt><dd>Служба поддержки</dd></div>
+                  <div><dt>Статус</dt><dd>Готово к отправке</dd></div>
                 </dl>
                 <button className="nyxo-action" type="submit">Создать обращение</button>
               </aside>

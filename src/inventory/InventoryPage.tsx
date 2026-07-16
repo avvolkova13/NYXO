@@ -15,9 +15,9 @@ const formatCoins = (value: number) => `${value.toLocaleString('ru-RU')} COINS`
 const actionErrors: Record<InventoryActionFailure, string> = {
   'invalid-trade-url': 'Укажите корректный Steam Trade URL с параметрами partner и token.',
   'missing-trade-url': 'Укажите Steam Trade URL перед выводом предмета.',
-  'item-not-found': 'Предмет больше не найден в локальном инвентаре.',
+  'item-not-found': 'Предмет больше не найден в инвентаре.',
   'item-unavailable': 'Этот предмет уже ожидает подтверждения вывода.',
-  'storage-error': 'Не удалось сохранить изменение в этом браузере.',
+  'storage-error': 'Не удалось сохранить изменение. Попробуйте ещё раз.',
 }
 
 function InventoryCard({
@@ -62,7 +62,7 @@ function InventoryCard({
             Продать за COINS
           </button>
         </div>
-        <small>Перепродажа пока недоступна и не меняет баланс COINS.</small>
+        <small>Баланс COINS изменяется только после подтверждённой операции.</small>
       </div>
     </article>
   )
@@ -80,7 +80,7 @@ export function InventoryPage() {
       return
     }
     setTradeUrl(result.state.steamTradeUrl)
-    setFeedback({ kind: 'success', message: 'Trade URL сохранён локально.' })
+    setFeedback({ kind: 'success', message: 'Trade URL сохранён.' })
   }
 
   const withdraw = (item: InventoryItem) => {
@@ -91,7 +91,7 @@ export function InventoryPage() {
     }
     setFeedback({
       kind: 'success',
-      message: `Локальный вывод «${item.name}» ожидает подтверждения.`,
+      message: `Запрос на вывод «${item.name}» ожидает подтверждения.`,
     })
   }
 
@@ -102,7 +102,7 @@ export function InventoryPage() {
         <header className="inventory-page__intro">
           <p className="eyebrow">NYXO / STEAM STORAGE</p>
           <h1>Инвентарь</h1>
-          <p>Купленные предметы и локальная подготовка Steam-трейда.</p>
+          <p>Купленные предметы и управление Steam-трейдами.</p>
         </header>
 
         <form
@@ -114,7 +114,7 @@ export function InventoryPage() {
         >
           <div>
             <label htmlFor="inventory-trade-url">Steam Trade URL</label>
-            <p>Нужен только для локального мок-вывода. Реальный Steam-трейд не создаётся.</p>
+            <p>Укажите адрес для получения предметов в Steam.</p>
           </div>
           <input
             id="inventory-trade-url"
@@ -146,7 +146,7 @@ export function InventoryPage() {
           <section className="inventory-page__empty">
             <p className="eyebrow">STORAGE / EMPTY</p>
             <h2>Инвентарь пуст</h2>
-            <p>После локальной покупки игровой предмет появится здесь.</p>
+            <p>После покупки игровой предмет появится здесь.</p>
             <a className="nyxo-action" href="/catalog">Перейти в каталог</a>
           </section>
         )}

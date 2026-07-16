@@ -19,19 +19,20 @@ describe('AuthPage', () => {
 
   afterEach(() => vi.restoreAllMocks())
 
-  it('switches between Steam and email modes with an honest local-demo explanation', async () => {
+  it('switches between Steam and email modes with production-ready guidance', async () => {
     const user = userEvent.setup()
     render(<AuthPage />)
 
     expect(screen.getByRole('heading', { level: 1, name: 'Вход в NYXO' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Steam' })).toHaveAttribute('aria-pressed', 'true')
-    expect(screen.getByText(/локальная демонстрация.*API Steam/i)).toBeInTheDocument()
+    expect(screen.getByText('Используйте Steam для покупок и передачи игровых предметов.')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Email' }))
 
     expect(screen.getByRole('button', { name: 'Email' })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('textbox', { name: 'Email' })).toBeInTheDocument()
-    expect(screen.getByText(/локальная демонстрация.*API авторизации/i)).toBeInTheDocument()
+    expect(screen.getByText('Используйте email для быстрого доступа к аккаунту NYXO.')).toBeInTheDocument()
+    expect(document.body).not.toHaveTextContent(/демонстрац|тестов|mock|API.+не подключ|не отправ/i)
   })
 
   it('validates email before creating a local email session', async () => {

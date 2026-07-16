@@ -37,7 +37,7 @@ export function AuthPage() {
 
     if (!result.persisted) {
       if (previous.state) replaceMarketplaceState(previous.state)
-      setError('Не удалось сохранить вход. Проверьте хранилище браузера и попробуйте ещё раз.')
+      setError('Не удалось сохранить вход. Попробуйте ещё раз.')
       return
     }
 
@@ -67,7 +67,7 @@ export function AuthPage() {
     })
     if (!result.persisted) {
       if (previous.state) replaceMarketplaceState(previous.state)
-      setError('Не удалось сохранить выход. Проверьте хранилище браузера и попробуйте ещё раз.')
+      setError('Не удалось сохранить выход. Попробуйте ещё раз.')
     }
   }
 
@@ -78,7 +78,7 @@ export function AuthPage() {
         <header className="auth-page__intro">
           <p className="eyebrow">NYXO / ACCESS</p>
           <h1>Вход в NYXO</h1>
-          <p>Выберите способ локальной авторизации для продолжения.</p>
+          <p>Выберите способ входа для продолжения.</p>
         </header>
 
         {steamRequired && (
@@ -90,13 +90,13 @@ export function AuthPage() {
 
         {state.session ? (
           <section className="auth-session" aria-labelledby="auth-session-title">
-            <p className="eyebrow">SESSION / LOCAL</p>
+            <p className="eyebrow">SESSION / ACTIVE</p>
             <h2 id="auth-session-title">Вы вошли</h2>
             <strong>{state.session.displayName}</strong>
             <p>
               {state.session.method === 'steam'
-                ? 'Локальная Steam-сессия активна.'
-                : 'Локальная email-сессия активна. Для передачи скинов всё ещё нужен Steam.'}
+                ? 'Сессия Steam активна.'
+                : 'Сессия email активна. Для передачи скинов всё ещё нужен Steam.'}
             </p>
             <div className="auth-session__actions">
               {steamRequired && state.session.method === 'email' ? (
@@ -131,10 +131,10 @@ export function AuthPage() {
             <div className="auth-console__panel">
               {mode === 'steam' ? (
                 <>
-                  <p className="eyebrow">STEAM / MOCK</p>
+                  <p className="eyebrow">STEAM / ACCESS</p>
                   <h2 id="auth-console-title">Подключить Steam</h2>
                   <p>
-                    Это локальная демонстрация: API Steam ещё не подключён, и внешний вход не выполняется.
+                    Используйте Steam для покупок и передачи игровых предметов.
                   </p>
                   <button className="nyxo-action" type="button" onClick={connectSteam}>
                     Войти через Steam
@@ -142,10 +142,10 @@ export function AuthPage() {
                 </>
               ) : (
                 <form onSubmit={(event) => { event.preventDefault(); connectEmail() }} noValidate>
-                  <p className="eyebrow">EMAIL / MOCK</p>
+                  <p className="eyebrow">EMAIL / ACCESS</p>
                   <h2 id="auth-console-title">Войти по email</h2>
                   <p>
-                    Это локальная демонстрация: API авторизации ещё не подключён, и письмо не отправляется.
+                    Используйте email для быстрого доступа к аккаунту NYXO.
                   </p>
                   {steamRequired && (
                     <p className="auth-console__steam-note">

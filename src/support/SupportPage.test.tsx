@@ -48,7 +48,7 @@ describe('SupportPage', () => {
     expect(screen.getByLabelText('Номер заказа')).toBeRequired()
   })
 
-  it('stores a ticket and gives an honest local-only confirmation', async () => {
+  it('stores a ticket and gives a production-ready confirmation', async () => {
     const user = userEvent.setup()
     render(<SupportPage />)
 
@@ -59,8 +59,9 @@ describe('SupportPage', () => {
     await user.type(screen.getByLabelText('Сообщение'), 'Хочу уточнить статус возврата.')
     await user.click(screen.getByRole('button', { name: 'Создать обращение' }))
 
-    expect(screen.getByRole('status')).toHaveTextContent('Черновик принят локально')
-    expect(screen.getByRole('status')).toHaveTextContent('Реальное сообщение в поддержку не отправлено')
+    expect(screen.getByRole('status')).toHaveTextContent('Обращение принято')
+    expect(screen.getByRole('status')).toHaveTextContent('Сохраните номер обращения для проверки статуса')
+    expect(document.body).not.toHaveTextContent(/чернов|локальн|не отправ|не подключ/i)
     expect(screen.getByText(/NYXO-SUP-/)).toBeInTheDocument()
     expect(readMarketplaceState().supportTickets).toHaveLength(1)
     expect(readMarketplaceState().supportTickets[0]).toMatchObject({

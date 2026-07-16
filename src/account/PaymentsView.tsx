@@ -9,7 +9,7 @@ export function PaymentsView({ payments }: { payments: MarketplacePayment[] }) {
       <header className="account-view__heading">
         <p className="eyebrow">ACCOUNT / COINS</p>
         <h1 id="account-payments-title">История платежей</h1>
-        <p>Локальный журнал пополнений и списаний без пересчёта в фиатную валюту.</p>
+        <p>Операции пополнения и покупки в COINS.</p>
       </header>
 
       {payments.length === 0 ? (

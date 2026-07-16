@@ -19,7 +19,7 @@ function Overview() {
       <header className="account-view__heading">
         <p className="eyebrow">NYXO / ACCOUNT</p>
         <h1 id="account-overview-title">Личный кабинет</h1>
-        <p>Баланс, последние покупки и быстрый доступ к локальным разделам.</p>
+        <p>Баланс, последние покупки и быстрый доступ к разделам аккаунта.</p>
       </header>
 
       <div className="account-overview__stats">
@@ -30,7 +30,7 @@ function Overview() {
         </article>
         <article className="account-stat">
           <span>Сессия</span>
-          <strong>{state.session ? state.session.displayName : 'Не выполнен вход'}</strong>
+          <strong>{state.session ? state.session.displayName : 'Гость'}</strong>
           <a href={state.session ? '/account/settings' : '/auth?returnTo=%2Faccount'}>
             {state.session ? 'Управлять сессией' : 'Войти'}
           </a>

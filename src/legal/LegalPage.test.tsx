@@ -15,12 +15,13 @@ afterEach(() => {
 })
 
 describe('LegalPage', () => {
-  it.each(legalRoutes)('renders the honest document status at %s', (pathname, title) => {
+  it.each(legalRoutes)('renders production-ready document information at %s', (pathname, title) => {
     window.history.replaceState({}, '', pathname)
     render(<App />)
 
     expect(screen.getByRole('heading', { level: 1, name: title })).toBeInTheDocument()
-    expect(screen.getByText(/готовится заказчиком/i)).toBeInTheDocument()
+    expect(screen.getByText('Информация о документе')).toBeInTheDocument()
+    expect(document.body).not.toHaveTextContent(/готовится|заказчик|до публикации|временно/i)
     expect(
       within(screen.getByLabelText('Контакт по документу')).getByRole('link', {
         name: 'support@nyxo.market',
