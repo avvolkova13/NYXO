@@ -27,10 +27,10 @@ const availabilityOptions: { label: string; value: AvailabilityStatus }[] = [
   { label: 'Осталось мало', value: 'limited' },
 ]
 
-const serviceOptions: { label: string; kinds: ProductKind[] }[] = [
-  { label: 'Counter-Strike 2', kinds: ['skin'] },
-  { label: 'Steam', kinds: ['steam-topup'] },
-  { label: 'GPT', kinds: ['gpt-topup'] },
+const serviceOptions: { label: string; kind: ProductKind }[] = [
+  { label: 'Counter-Strike 2', kind: 'skin' },
+  { label: 'Steam', kind: 'steam-topup' },
+  { label: 'GPT', kind: 'gpt-topup' },
 ]
 
 const categoryOptions = [...new Set(products.map((product) => product.category))]
@@ -180,15 +180,15 @@ export function CatalogPage() {
             <fieldset>
               <legend>Игра / сервис</legend>
               {serviceOptions.map((option) => {
-                const selected =
-                  option.kinds.length === filters.kinds.length &&
-                  option.kinds.every((kind) => filters.kinds.includes(kind))
+                const selected = filters.kinds.includes(option.kind)
                 return (
                   <label key={option.label}>
                     <input
                       type="checkbox"
                       checked={selected}
-                      onChange={() => updateFilters({ kinds: selected ? [] : option.kinds })}
+                      onChange={() =>
+                        updateFilters({ kinds: toggleValue(filters.kinds, option.kind) })
+                      }
                     />
                     {option.label}
                   </label>

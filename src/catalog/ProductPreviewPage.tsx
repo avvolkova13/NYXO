@@ -6,7 +6,7 @@ import { ProductMedia } from '../components/ProductMedia'
 import { formatPrice } from '../components/ProductCard'
 import { products } from '../data/products'
 import type { Product } from '../types/product'
-import { addProductToCart } from './CatalogProductCard'
+import { addCartProductId } from './cartStorage'
 
 interface ProductPreviewPageProps {
   slug: string
@@ -79,8 +79,15 @@ export function ProductPreviewPage({ slug }: ProductPreviewPageProps) {
             <button
               className="nyxo-action"
               type="button"
-              aria-label="Добавить в корзину"
-              onClick={() => setNotice(addProductToCart(product))}
+              aria-label={`Добавить ${product.name} в корзину`}
+              onClick={() => {
+                const result = addCartProductId(product.id)
+                setNotice(
+                  result.ok
+                    ? `${product.name} — добавлено в корзину`
+                    : `Не удалось добавить в корзину: ${product.name}`,
+                )
+              }}
             >
               Добавить в корзину
             </button>

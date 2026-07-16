@@ -1,25 +1,11 @@
 import type { Product } from '../types/product'
 import { ProductMedia } from '../components/ProductMedia'
 import { formatPrice } from '../components/ProductCard'
+import { addCartProductId } from './cartStorage'
 
 interface CatalogProductCardProps {
   product: Product
   onAdded: (message: string) => void
-}
-
-function readCartIds(): string[] {
-  try {
-    const stored = JSON.parse(window.localStorage.getItem('nyxo:cart') ?? '[]')
-    return Array.isArray(stored) ? stored.filter((id): id is string => typeof id === 'string') : []
-  } catch {
-    return []
-  }
-}
-
-export function addProductToCart(product: Product): string {
-  const ids = readCartIds()
-  window.localStorage.setItem('nyxo:cart', JSON.stringify([...new Set([...ids, product.id])]))
-  return `${product.name} — добавлено в корзину`
 }
 
 const availabilityLabels: Record<Product['availability'], string> = {
@@ -55,8 +41,15 @@ export function CatalogProductCard({ product, onAdded }: CatalogProductCardProps
             <button
               className="nyxo-action"
               type="button"
-              aria-label="Добавить в корзину"
-              onClick={() => onAdded(addProductToCart(product))}
+              aria-label={`Добавить ${product.name} в корзину`}
+              onClick={() => {
+                const result = addCartProductId(product.id)
+                onAdded(
+                  result.ok
+                    ? `${product.name} — добавлено в корзину`
+                    : `Не удалось добавить в корзину: ${product.name}`,
+                )
+              }}
             >
               Добавить в корзину
             </button>

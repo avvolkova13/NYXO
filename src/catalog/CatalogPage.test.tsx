@@ -1,10 +1,12 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { products } from '../data/products'
 import { CatalogPage } from './CatalogPage'
 import { ProductPreviewPage } from './ProductPreviewPage'
+
+afterEach(() => vi.restoreAllMocks())
 
 describe('CatalogPage', () => {
   beforeEach(() => {
@@ -43,14 +45,18 @@ describe('CatalogPage', () => {
   it('adds a product to the mock cart with confirmation and no duplicate ids', async () => {
     const user = userEvent.setup()
     render(<CatalogPage />)
-    const buttons = screen.getAllByRole('button', { name: 'Добавить в корзину' })
+    const product = products[3]
+    const button = screen.getByRole('button', {
+      name: `Добавить ${product.name} в корзину`,
+    })
+    expect(button).toHaveTextContent(/^Добавить в корзину$/)
 
-    await user.click(buttons[0])
-    await user.click(buttons[0])
+    await user.click(button)
+    await user.click(button)
 
     expect(screen.getByRole('status')).toHaveTextContent('добавлено в корзину')
     expect(JSON.parse(window.localStorage.getItem('nyxo:cart') ?? '[]')).toEqual([
-      products[3].id,
+      product.id,
     ])
   })
 
@@ -59,7 +65,9 @@ describe('CatalogPage', () => {
     const user = userEvent.setup()
     render(<CatalogPage />)
 
-    await user.click(screen.getAllByRole('button', { name: 'Добавить в корзину' })[0])
+    await user.click(
+      screen.getByRole('button', { name: `Добавить ${products[3].name} в корзину` }),
+    )
 
     expect(JSON.parse(window.localStorage.getItem('nyxo:cart') ?? '[]')).toHaveLength(1)
   })
@@ -80,6 +88,52 @@ describe('CatalogPage', () => {
       'true',
     )
   })
+
+  it('restores and toggles game or service kinds independently', async () => {
+    window.history.replaceState(null, '', '/catalog?kinds=skin,steam-topup')
+    const user = userEvent.setup()
+    render(<CatalogPage />)
+
+    const counterStrike = screen.getByRole('checkbox', { name: 'Counter-Strike 2' })
+    const steam = screen.getByRole('checkbox', { name: 'Steam' })
+    expect(counterStrike).toBeChecked()
+    expect(steam).toBeChecked()
+
+    await user.click(steam)
+
+    expect(counterStrike).toBeChecked()
+    expect(steam).not.toBeChecked()
+    expect(new URLSearchParams(window.location.search).get('kinds')).toBe('skin')
+  })
+
+  it('applies a secondary availability filter and removes its chip', async () => {
+    const user = userEvent.setup()
+    render(<CatalogPage />)
+
+    await user.click(screen.getByRole('checkbox', { name: 'Осталось мало' }))
+    expect(new URLSearchParams(window.location.search).get('availability')).toBe('limited')
+    expect(screen.getAllByTestId('catalog-product')).toHaveLength(
+      products.filter((product) => product.availability === 'limited').length,
+    )
+
+    await user.click(screen.getByRole('button', { name: /Осталось мало.*убрать фильтр/ }))
+    expect(new URLSearchParams(window.location.search).has('availability')).toBe(false)
+    expect(screen.getAllByTestId('catalog-product')).toHaveLength(products.length)
+  })
+
+  it('shows failure feedback when cart storage cannot be written', async () => {
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('quota exceeded')
+    })
+    const user = userEvent.setup()
+    render(<CatalogPage />)
+
+    await user.click(
+      screen.getByRole('button', { name: `Добавить ${products[3].name} в корзину` }),
+    )
+
+    expect(screen.getByRole('status')).toHaveTextContent('Не удалось добавить в корзину')
+  })
 })
 
 describe('ProductPreviewPage', () => {
@@ -97,7 +151,9 @@ describe('ProductPreviewPage', () => {
     expect(screen.getByText(product.attribute!)).toBeInTheDocument()
     expect(screen.getByText(product.delivery)).toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: 'Добавить в корзину' }))
+    await user.click(
+      screen.getByRole('button', { name: `Добавить ${product.name} в корзину` }),
+    )
     expect(screen.getByRole('status')).toHaveTextContent('добавлено в корзину')
     expect(JSON.parse(window.localStorage.getItem('nyxo:cart') ?? '[]')).toEqual([product.id])
   })
