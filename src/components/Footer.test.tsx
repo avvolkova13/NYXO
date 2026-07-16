@@ -25,4 +25,10 @@ describe('Footer', () => {
     expect(lockup).not.toHaveClass('is-closing')
     expect(screen.queryByTestId('footer-lockup-card')).not.toBeInTheDocument()
   })
+
+  it('opens the support page instead of an email draft', () => {
+    render(<Footer />)
+
+    expect(screen.getByRole('link', { name: 'Поддержка' })).toHaveAttribute('href', '/support')
+  })
 })

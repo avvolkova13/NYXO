@@ -7,6 +7,7 @@ import { TopUpPage } from './balance/TopUpPage'
 import { AuthPage } from './auth/AuthPage'
 import { AccountPage } from './account/AccountPage'
 import { InventoryPage } from './inventory/InventoryPage'
+import { SupportPage } from './support/SupportPage'
 import { FAQ } from './components/FAQ'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
@@ -46,6 +47,7 @@ export default function App() {
   if (route.name === 'auth') return <AuthPage />
   if (route.name === 'account') return <AccountPage section={route.section} />
   if (route.name === 'inventory') return <InventoryPage />
+  if (route.name === 'support') return <SupportPage />
 
   return <HomePage />
 }

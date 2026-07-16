@@ -9,7 +9,7 @@ const primaryDestinations: FooterDestination[] = [
   { label: 'Как это работает', href: '/#how' },
   { label: 'FAQ', href: '/#faq' },
   { label: 'Личный кабинет', href: '/#account-inventory' },
-  { label: 'Поддержка', href: 'mailto:support@nyxo.market' },
+  { label: 'Поддержка', href: '/support' },
 ]
 
 const legalDestinations: FooterDestination[] = [
