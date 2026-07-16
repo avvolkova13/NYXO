@@ -11,15 +11,22 @@ describe('mock product catalogue', () => {
   it('keeps marketplace identity and value fields complete', () => {
     for (const product of products) {
       expect(product.id).toBeTruthy()
+      expect(product.slug).toBeTruthy()
       expect(product.name).toBeTruthy()
-      expect(product.game).toBeTruthy()
+      expect(product.category).toBeTruthy()
+      expect(product.description).toBeTruthy()
+      expect(product.searchAliases.length).toBeGreaterThan(0)
       expect(product.price).toBeGreaterThan(0)
-      expect(product.condition).toBeTruthy()
+      expect(product.delivery).toBeTruthy()
+      expect(product.popularity).toBeGreaterThanOrEqual(0)
+      expect(product.createdAt).toBeTruthy()
     }
   })
 
-  it('uses LIS-SKINS source data and images instead of synthetic catalogue entries', () => {
-    expect(products).toHaveLength(5)
+  it('preserves the original LIS-SKINS inventory and artwork', () => {
+    const originalSkins = products.slice(0, 5)
+
+    expect(products).toHaveLength(12)
     expect(products[0]).toMatchObject({
       id: 'ak47-wild-lotus',
       name: 'AK-47 | Дикий лотос',
@@ -30,6 +37,21 @@ describe('mock product catalogue', () => {
       attribute: '0,054949',
       imageUrl: 'https://assets.lis-skins.com/market_images/145355_s.png',
     })
-    expect(products.every((product) => product.imageUrl.startsWith('https://assets.lis-skins.com/'))).toBe(true)
+    expect(originalSkins.every((product) => product.imageUrl.startsWith('https://assets.lis-skins.com/'))).toBe(true)
+  })
+
+  it.each(['steam', 'gpt', 'пистолет', 'автомат'])('contains searchable mock data for %s', (term) => {
+    const normalized = term.toLowerCase()
+    expect(products.some((product) =>
+      [product.name, product.category, product.game, ...product.searchAliases]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+        .includes(normalized),
+    )).toBe(true)
+  })
+
+  it('stores all marketplace prices in COINS', () => {
+    expect(products.every((product) => product.currency === 'COINS')).toBe(true)
   })
 })
