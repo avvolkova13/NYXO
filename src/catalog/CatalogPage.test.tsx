@@ -3,10 +3,22 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { products } from '../data/products'
+import styles from '../styles.css?raw'
 import { CatalogPage } from './CatalogPage'
 import { ProductPreviewPage } from './ProductPreviewPage'
 
 afterEach(() => vi.restoreAllMocks())
+
+describe('catalog responsive styles', () => {
+  it('defines desktop, tablet, and mobile catalog structures', () => {
+    expect(styles).toMatch(/\.catalog-page__workspace\s*{[\s\S]*grid-template-columns:/)
+    expect(styles).toMatch(/@media \(max-width: 860px\)[\s\S]*\.catalog-page__grid/)
+    expect(styles).toMatch(/@media \(max-width: 600px\)[\s\S]*\.catalog-page__filters/)
+    expect(styles).toMatch(/\.catalog-page__layout\s*{[\s\S]*grid-template-columns:/)
+    expect(styles).toMatch(/@media \(max-width: 860px\)[\s\S]*\.catalog-results__grid/)
+    expect(styles).toMatch(/@media \(max-width: 600px\)[\s\S]*\.catalog-filters/)
+  })
+})
 
 describe('CatalogPage', () => {
   beforeEach(() => {
