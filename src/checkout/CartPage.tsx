@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Footer } from '../components/Footer'
 import { Header } from '../components/Header'
-import { products } from '../data/products'
+import { resolveCatalogProducts } from '../catalog/catalogOffers'
 import {
   replaceMarketplaceState,
   updateMarketplaceState,
@@ -16,7 +16,14 @@ const formatCoins = (value: number) => `${value.toLocaleString('ru-RU')} COINS`
 
 export function CartPage() {
   const state = useMarketplaceState()
-  const cart = useMemo(() => calculateCart(products, state.cartProductIds), [state.cartProductIds])
+  const cartProducts = useMemo(
+    () => resolveCatalogProducts(state.cartProductIds),
+    [state.cartProductIds],
+  )
+  const cart = useMemo(
+    () => calculateCart(cartProducts, state.cartProductIds),
+    [cartProducts, state.cartProductIds],
+  )
   const [receipt, setReceipt] = useState<MarketplaceOrder | null>(null)
   const [error, setError] = useState('')
   const [cleanupError, setCleanupError] = useState(false)
@@ -24,7 +31,7 @@ export function CartPage() {
   const attemptedCleanup = useRef<string | null>(null)
 
   const cleanUnknownProductIds = (current: MarketplaceState) => {
-    const knownIds = calculateCart(products, current.cartProductIds).items.map(
+    const knownIds = resolveCatalogProducts(current.cartProductIds).map(
       (product) => product.id,
     )
     if (knownIds.length === current.cartProductIds.length) {
@@ -38,9 +45,7 @@ export function CartPage() {
       previous.state = latest
       return {
         ...latest,
-        cartProductIds: calculateCart(products, latest.cartProductIds).items.map(
-          (product) => product.id,
-        ),
+        cartProductIds: resolveCatalogProducts(latest.cartProductIds).map((product) => product.id),
       }
     })
 
@@ -92,7 +97,7 @@ export function CartPage() {
     const previous: { state: MarketplaceState | null } = { state: null }
     const persisted = updateMarketplaceState((current) => {
       previous.state = current
-      completed.result = completePurchase(current, products)
+      completed.result = completePurchase(current, resolveCatalogProducts(current.cartProductIds))
       return completed.result.state
     })
 
@@ -199,7 +204,7 @@ export function CartPage() {
                   ) : cart.hasSkin && state.session?.method !== 'steam' ? (
                     <div className="cart-summary__gate">
                       <p>Для передачи скина нужна активная Steam-сессия.</p>
-                      <a className="nyxo-action" href="/auth?returnTo=%2Fcart&required=steam">Войти через Steam</a>
+                      <a className="nyxo-action" href="/auth?returnTo=%2Fcart&required=steam">Продолжить со Steam</a>
                     </div>
                   ) : (
                     <button className="nyxo-action" type="button" onClick={purchase}>Оплатить заказ</button>

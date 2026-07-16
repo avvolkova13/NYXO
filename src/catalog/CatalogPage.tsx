@@ -13,6 +13,7 @@ import {
   type CatalogSort,
 } from './catalogModel'
 import { CatalogProductCard } from './CatalogProductCard'
+import { createCatalogOffers } from './catalogOffers'
 import { migrateLegacyCartIds } from './cartStorage'
 
 const kindOptions: { label: string; value: ProductKind | 'all' }[] = [
@@ -63,7 +64,7 @@ export function CatalogPage() {
   const visibleResults = useMemo(
     () =>
       Array.from({ length: visiblePages }, (_, pageIndex) =>
-        results.map((product) => ({ product, pageIndex })),
+        createCatalogOffers(results, pageIndex),
       ).flat(),
     [results, visiblePages],
   )
@@ -383,10 +384,10 @@ export function CatalogPage() {
             {results.length > 0 ? (
               <>
                 <div className="catalog-results__grid">
-                  {visibleResults.map(({ product, pageIndex }) => (
+                  {visibleResults.map((offer) => (
                     <CatalogProductCard
-                      key={`${feedKey || 'all'}:${pageIndex}:${product.id}`}
-                      product={product}
+                      key={`${feedKey || 'all'}:${offer.id}`}
+                      offer={offer}
                       onAdded={setNotice}
                     />
                   ))}

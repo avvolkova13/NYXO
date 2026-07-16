@@ -287,7 +287,7 @@ describe('CatalogPage', () => {
     ).toHaveTextContent('В корзине')
   })
 
-  it('automatically appends deterministic catalog pages when the sentinel enters view', () => {
+  it('automatically appends a deterministic page of distinct marketplace offers', () => {
     let intersectionCallback: IntersectionObserverCallback | undefined
     const observe = vi.fn()
     const disconnect = vi.fn()
@@ -323,10 +323,14 @@ describe('CatalogPage', () => {
     expect(screen.getByRole('status', { name: 'Подгрузка каталога' })).toHaveTextContent(
       `Показано ${products.length * 2}`,
     )
-    const links = screen
-      .getAllByRole('link', { name: 'Подробнее' })
-      .map((link) => link.getAttribute('href'))
-    expect(links.slice(0, products.length)).toEqual(links.slice(products.length))
+    const cards = screen.getAllByTestId('catalog-product')
+    const firstPage = cards.slice(0, products.length).map((card) => card.textContent)
+    const secondPage = cards.slice(products.length).map((card) => card.textContent)
+    expect(secondPage).not.toEqual(firstPage)
+    expect(secondPage.every((text, index) => text !== firstPage[index])).toBe(true)
+    expect(cards.map((card) => card.getAttribute('data-offer-id'))).toHaveLength(
+      new Set(cards.map((card) => card.getAttribute('data-offer-id'))).size,
+    )
   })
 
   it('resets the visible feed after search, sort, and popstate changes', async () => {

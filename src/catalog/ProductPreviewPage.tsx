@@ -8,6 +8,7 @@ import { products } from '../data/products'
 import { useMarketplaceState } from '../marketplace/useMarketplaceState'
 import type { Product } from '../types/product'
 import { addCartProductId, migrateLegacyCartIds } from './cartStorage'
+import { createCatalogOffer, resolveCatalogProduct } from './catalogOffers'
 
 interface ProductPreviewPageProps {
   slug: string
@@ -22,7 +23,14 @@ const availabilityLabels: Record<Product['availability'], string> = {
 export function ProductPreviewPage({ slug }: ProductPreviewPageProps) {
   const [notice, setNotice] = useState('')
   const marketplaceState = useMarketplaceState()
-  const product = products.find((item) => item.slug === slug)
+  const baseProduct = products.find((item) => item.slug === slug)
+  const requestedOfferId = new URLSearchParams(window.location.search).get('offer')
+  const requestedOffer = requestedOfferId ? resolveCatalogProduct(requestedOfferId) : undefined
+  const product = requestedOffer && baseProduct && requestedOffer.slug === baseProduct.slug
+    ? requestedOffer
+    : baseProduct
+      ? createCatalogOffer(baseProduct, 0).product
+      : undefined
 
   useEffect(() => {
     migrateLegacyCartIds()

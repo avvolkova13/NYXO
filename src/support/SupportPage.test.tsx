@@ -59,9 +59,9 @@ describe('SupportPage', () => {
     await user.type(screen.getByLabelText('Сообщение'), 'Хочу уточнить статус возврата.')
     await user.click(screen.getByRole('button', { name: 'Создать обращение' }))
 
-    expect(screen.getByRole('status')).toHaveTextContent('Обращение принято')
-    expect(screen.getByRole('status')).toHaveTextContent('Сохраните номер обращения для проверки статуса')
-    expect(document.body).not.toHaveTextContent(/чернов|локальн|не отправ|не подключ/i)
+    expect(screen.getByRole('status')).toHaveTextContent('Обращение сохранено')
+    expect(screen.getByRole('status')).toHaveTextContent('Обращение №')
+    expect(document.body).not.toHaveTextContent(/чернов|локальн|не отправ|не подключ|принято|готово к отправке/i)
     expect(screen.getByText(/NYXO-SUP-/)).toBeInTheDocument()
     expect(readMarketplaceState().supportTickets).toHaveLength(1)
     expect(readMarketplaceState().supportTickets[0]).toMatchObject({

@@ -7,6 +7,7 @@ import {
   parseCatalogState,
   serializeCatalogState,
 } from './catalogModel'
+import { createCatalogOffers, resolveCatalogProduct } from './catalogOffers'
 
 describe('filterProducts', () => {
   it.each(['Steam', 'GPT', 'Пистолет', 'Автомат'])('finds %s', (query) => {
@@ -182,5 +183,44 @@ describe('catalog URL state', () => {
 
     expect(restored.filters.kinds).toEqual(['skin', 'gpt-topup'])
     expect(restored.filters.availability).toEqual(['available', 'instant'])
+  })
+})
+
+describe('catalog offer pages', () => {
+  it('creates stable, visibly different records for the first and second feed pages', () => {
+    const firstPage = createCatalogOffers(products, 0)
+    const secondPage = createCatalogOffers(products, 1)
+
+    expect(firstPage.map((offer) => offer.id)).not.toEqual(secondPage.map((offer) => offer.id))
+    expect(new Set([...firstPage, ...secondPage].map((offer) => offer.id)).size).toBe(
+      products.length * 2,
+    )
+    expect(secondPage.every((offer) => offer.label !== firstPage.find(
+      (candidate) => candidate.baseProductId === offer.baseProductId,
+    )?.label)).toBe(true)
+
+    const firstSkin = firstPage.find((offer) => offer.product.kind === 'skin')!
+    const secondSkin = secondPage.find(
+      (offer) => offer.baseProductId === firstSkin.baseProductId,
+    )!
+    expect(secondSkin.product.attribute).not.toBe(firstSkin.product.attribute)
+    expect(secondSkin.product.price).not.toBe(firstSkin.product.price)
+  })
+
+  it('resolves an appended offer id back to the exact cart product', () => {
+    const offer = createCatalogOffers(products, 2)[0]
+
+    expect(resolveCatalogProduct(offer.id)).toEqual(offer.product)
+  })
+
+  it('keeps service denominations factual while giving each offer a unique presentation', () => {
+    const service = products.find((product) => product.kind === 'steam-topup')!
+    const [first] = createCatalogOffers([service], 0)
+    const [second] = createCatalogOffers([service], 1)
+
+    expect(second.product.name).toBe(first.product.name)
+    expect(second.product.price).toBe(first.product.price)
+    expect(second.product.attribute).not.toBe(first.product.attribute)
+    expect(second.label).not.toBe(first.label)
   })
 })

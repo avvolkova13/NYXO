@@ -53,14 +53,14 @@ describe('complete marketplace flow', () => {
     expect(topUp).toBeEnabled()
     await user.click(topUp)
 
-    expect(screen.getByRole('heading', { name: 'Баланс пополнен' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Баланс COINS обновлён' })).toBeInTheDocument()
     expect(readMarketplaceState().balanceCoins).toBe(7_500)
     await user.click(screen.getByRole('link', { name: 'Вернуться' }))
 
     expect(screen.getByText('Для передачи скина нужна активная Steam-сессия.')).toBeInTheDocument()
-    await user.click(screen.getByRole('link', { name: 'Войти через Steam' }))
+    await user.click(screen.getByRole('link', { name: 'Продолжить со Steam' }))
     expect(screen.getByRole('status')).toHaveTextContent('Для передачи скина нужен вход через Steam')
-    await user.click(screen.getByRole('button', { name: 'Войти через Steam' }))
+    await user.click(screen.getByRole('button', { name: 'Продолжить со Steam' }))
 
     expect(window.location.pathname).toBe('/cart')
     await user.click(screen.getByRole('button', { name: 'Оплатить заказ' }))

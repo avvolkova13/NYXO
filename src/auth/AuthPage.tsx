@@ -90,18 +90,18 @@ export function AuthPage() {
 
         {state.session ? (
           <section className="auth-session" aria-labelledby="auth-session-title">
-            <p className="eyebrow">SESSION / ACTIVE</p>
-            <h2 id="auth-session-title">Вы вошли</h2>
+            <p className="eyebrow">ACCESS / SAVED</p>
+            <h2 id="auth-session-title">Способ входа выбран</h2>
             <strong>{state.session.displayName}</strong>
             <p>
               {state.session.method === 'steam'
-                ? 'Сессия Steam активна.'
-                : 'Сессия email активна. Для передачи скинов всё ещё нужен Steam.'}
+                ? 'Steam выбран для продолжения.'
+                : 'Email выбран. Для передачи скинов всё ещё нужен Steam.'}
             </p>
             <div className="auth-session__actions">
               {steamRequired && state.session.method === 'email' ? (
                 <button className="nyxo-action" type="button" onClick={connectSteam}>
-                  Войти через Steam
+                  Продолжить со Steam
                 </button>
               ) : (
                 <a className="nyxo-action" href={returnTo}>Продолжить</a>
@@ -132,12 +132,12 @@ export function AuthPage() {
               {mode === 'steam' ? (
                 <>
                   <p className="eyebrow">STEAM / ACCESS</p>
-                  <h2 id="auth-console-title">Подключить Steam</h2>
+                  <h2 id="auth-console-title">Продолжить со Steam</h2>
                   <p>
-                    Используйте Steam для покупок и передачи игровых предметов.
+                    Выберите Steam для покупок и передачи игровых предметов.
                   </p>
                   <button className="nyxo-action" type="button" onClick={connectSteam}>
-                    Войти через Steam
+                    Продолжить со Steam
                   </button>
                 </>
               ) : (

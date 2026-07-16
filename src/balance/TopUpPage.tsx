@@ -103,8 +103,8 @@ export function TopUpPage() {
             aria-labelledby="top-up-success-title"
           >
             <p className="eyebrow">COINS / COMPLETE</p>
-            <h1 id="top-up-success-title">Баланс пополнен</h1>
-            <p>Операция сохранена в истории платежей.</p>
+            <h1 id="top-up-success-title">Баланс COINS обновлён</h1>
+            <p>Баланс и запись в истории платежей обновлены.</p>
             <dl>
               <div><dt>Новый баланс</dt><dd>{formatCoins(newBalance)}</dd></div>
               <div><dt>Статус</dt><dd>Выполнено</dd></div>
@@ -177,7 +177,7 @@ export function TopUpPage() {
                   <span>02</span>
                   <h2 id="top-up-confirm-title">Подтверждение</h2>
                 </div>
-                <p className="top-up-form__mock-label">
+                <p className="top-up-form__status-label">
                   Пополнение баланса COINS
                 </p>
                 <dl>

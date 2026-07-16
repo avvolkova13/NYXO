@@ -89,8 +89,8 @@ describe('TopUpPage', () => {
     await user.click(screen.getByRole('button', { name: 'Пополнить баланс' }))
 
     const status = screen.getByRole('status')
-    expect(status).toHaveAccessibleName('Баланс пополнен')
-    expect(status).toHaveTextContent('Операция сохранена в истории платежей')
+    expect(status).toHaveAccessibleName('Баланс COINS обновлён')
+    expect(status).toHaveTextContent('Баланс и запись в истории платежей обновлены')
     expect(within(status).getByText('3 500 COINS')).toBeInTheDocument()
     expect(within(status).getByRole('link', { name: 'Вернуться' })).toHaveAttribute(
       'href',
@@ -136,13 +136,13 @@ describe('TopUpPage', () => {
     await user.click(screen.getByRole('button', { name: 'Пополнить баланс' }))
 
     expect(screen.getByRole('alert')).toHaveTextContent('Не удалось сохранить пополнение')
-    expect(screen.queryByRole('heading', { name: 'Баланс пополнен' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Баланс COINS обновлён' })).not.toBeInTheDocument()
     expect(readMarketplaceState().balanceCoins).toBe(2_500)
     expect(readMarketplaceState().payments).toHaveLength(1)
 
     setItem.mockRestore()
     await user.click(screen.getByRole('button', { name: 'Пополнить баланс' }))
-    expect(screen.getByRole('heading', { name: 'Баланс пополнен' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Баланс COINS обновлён' })).toBeInTheDocument()
     expect(readMarketplaceState().balanceCoins).toBe(7_500)
   })
 
@@ -178,7 +178,7 @@ describe('TopUpPage', () => {
     await user.click(screen.getByRole('button', { name: 'Пополнить баланс' }))
 
     expect(screen.getByRole('alert')).toHaveTextContent('итоговый баланс превышает допустимый лимит')
-    expect(screen.queryByRole('heading', { name: 'Баланс пополнен' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'Баланс COINS обновлён' })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Вернуться' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Пополнить баланс' })).toBeEnabled()
     expect(setItem).not.toHaveBeenCalled()

@@ -86,9 +86,9 @@ export function SupportPage() {
             aria-labelledby="support-confirmation-title"
           >
             <p className="eyebrow">NYXO / TICKET</p>
-            <h1 id="support-confirmation-title">Обращение принято</h1>
+            <h1 id="support-confirmation-title">Обращение сохранено</h1>
             <p className="support-confirmation__number">
-              Номер обращения <strong>{ticketNumber}</strong>
+              Обращение № <strong>{ticketNumber}</strong>
             </p>
             <p className="support-confirmation__notice">
               Сохраните номер обращения для проверки статуса.
@@ -204,7 +204,7 @@ export function SupportPage() {
                 </p>
                 <dl>
                   <div><dt>Канал</dt><dd>Служба поддержки</dd></div>
-                  <div><dt>Статус</dt><dd>Готово к отправке</dd></div>
+                  <div><dt>Статус</dt><dd>Данные заполнены</dd></div>
                 </dl>
                 <button className="nyxo-action" type="submit">Создать обращение</button>
               </aside>

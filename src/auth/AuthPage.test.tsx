@@ -25,14 +25,15 @@ describe('AuthPage', () => {
 
     expect(screen.getByRole('heading', { level: 1, name: 'Вход в NYXO' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Steam' })).toHaveAttribute('aria-pressed', 'true')
-    expect(screen.getByText('Используйте Steam для покупок и передачи игровых предметов.')).toBeInTheDocument()
+    expect(screen.getByText('Выберите Steam для покупок и передачи игровых предметов.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Продолжить со Steam' })).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Email' }))
 
     expect(screen.getByRole('button', { name: 'Email' })).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('textbox', { name: 'Email' })).toBeInTheDocument()
     expect(screen.getByText('Используйте email для быстрого доступа к аккаунту NYXO.')).toBeInTheDocument()
-    expect(document.body).not.toHaveTextContent(/демонстрац|тестов|mock|API.+не подключ|не отправ/i)
+    expect(document.body).not.toHaveTextContent(/демонстрац|тестов|mock|API.+не подключ|не отправ|Steam активна|подключить Steam/i)
   })
 
   it('validates email before creating a local email session', async () => {
@@ -53,7 +54,7 @@ describe('AuthPage', () => {
     render(<AuthPage />)
 
     expect(screen.getByRole('status')).toHaveTextContent('Для передачи скина нужен вход через Steam')
-    await user.click(screen.getByRole('button', { name: 'Войти через Steam' }))
+    await user.click(screen.getByRole('button', { name: 'Продолжить со Steam' }))
 
     expect(readMarketplaceState().session).toMatchObject({
       method: 'steam',
@@ -71,7 +72,7 @@ describe('AuthPage', () => {
     const user = userEvent.setup()
     render(<AuthPage />)
 
-    await user.click(screen.getByRole('button', { name: 'Войти через Steam' }))
+    await user.click(screen.getByRole('button', { name: 'Продолжить со Steam' }))
 
     expect(window.location.pathname).toBe('/account')
     expect(window.location.origin).not.toBe('https://evil.example')
@@ -111,7 +112,7 @@ describe('AuthPage', () => {
     await user.click(screen.getByRole('button', { name: 'Выйти' }))
 
     expect(readMarketplaceState().session).toBeNull()
-    expect(screen.getByRole('button', { name: 'Войти через Steam' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Продолжить со Steam' })).toBeInTheDocument()
   })
 
   it('keeps the existing session visible when logout cannot be persisted', async () => {
@@ -150,7 +151,7 @@ describe('AuthPage', () => {
     const user = userEvent.setup()
     render(<AuthPage />)
 
-    await user.click(screen.getByRole('button', { name: 'Войти через Steam' }))
+    await user.click(screen.getByRole('button', { name: 'Продолжить со Steam' }))
 
     expect(readMarketplaceState().session).toMatchObject({
       method: 'steam',

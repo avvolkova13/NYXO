@@ -1,6 +1,6 @@
 import type { Product } from '../types/product'
 
-// Mock catalog combining LIS-SKINS offer snapshots with service top-up fixtures.
+// Catalog combining product references with digital service denominations.
 export const products: Product[] = [
   {
     id: 'ak47-wild-lotus',

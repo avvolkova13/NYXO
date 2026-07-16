@@ -15,7 +15,7 @@ export function Account() {
             <PixelHeading as="h2" id="account-title">Личный кабинет</PixelHeading>
             <p>История покупок, сделки и инвентарь в одном месте.</p>
           </div>
-          <a className="nyxo-action" href="#account-login"><span className="status-lamp" aria-hidden="true" />Войти через Steam</a>
+          <a className="nyxo-action" href="/auth?returnTo=%2Faccount&required=steam"><span className="status-lamp" aria-hidden="true" />Продолжить со Steam</a>
         </div>
         <div className="account__grid">
           <article className="account-module" id="account-login">

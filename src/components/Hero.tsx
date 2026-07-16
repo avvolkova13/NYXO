@@ -238,8 +238,8 @@ export function Hero() {
           <em aria-hidden="true">{inspectionLocked ? '×' : '+'}</em>
         </button>
 
-        <time className="hero-station-time" aria-label="Локальное время станции">
-          <span>Локальное время</span>
+        <time className="hero-station-time" aria-label="Время станции">
+          <span>Время станции</span>
           <strong>ЕКБ&nbsp;&nbsp;{time}</strong>
         </time>
 

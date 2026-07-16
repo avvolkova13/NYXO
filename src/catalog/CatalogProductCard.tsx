@@ -3,9 +3,10 @@ import { ProductMedia } from '../components/ProductMedia'
 import { formatPrice } from '../components/ProductCard'
 import { useMarketplaceState } from '../marketplace/useMarketplaceState'
 import { addCartProductId } from './cartStorage'
+import type { CatalogOffer } from './catalogOffers'
 
 interface CatalogProductCardProps {
-  product: Product
+  offer: CatalogOffer
   onAdded: (message: string) => void
 }
 
@@ -15,12 +16,17 @@ const availabilityLabels: Record<Product['availability'], string> = {
   limited: 'Осталось мало',
 }
 
-export function CatalogProductCard({ product, onAdded }: CatalogProductCardProps) {
+export function CatalogProductCard({ offer, onAdded }: CatalogProductCardProps) {
+  const { product } = offer
   const marketplaceState = useMarketplaceState()
   const isInCart = marketplaceState.cartProductIds.includes(product.id)
 
   return (
-    <article className="catalog-product-card product-card-shell" data-testid="catalog-product">
+    <article
+      className="catalog-product-card product-card-shell"
+      data-testid="catalog-product"
+      data-offer-id={offer.id}
+    >
       <div className="product-card product-card--standard">
         <div className="product-card__module-top">
           <span className="status-lamp" aria-hidden="true" />
@@ -34,12 +40,19 @@ export function CatalogProductCard({ product, onAdded }: CatalogProductCardProps
           </p>
           <h2>{product.name}</h2>
           <p>{product.description}</p>
+          <p className="catalog-product-card__offer">
+            <span>{offer.label}</span>
+            {product.attribute && <b>{product.attributeLabel}: {product.attribute}</b>}
+          </p>
           <p className="catalog-product-card__delivery">{product.delivery}</p>
           <strong className="product-card__price">
             {formatPrice(product.price, product.currency)}
           </strong>
           <div className="catalog-product-card__actions">
-            <a className="nyxo-action" href={`/catalog/${product.slug}`}>
+            <a
+              className="nyxo-action"
+              href={`/catalog/${product.slug}?offer=${encodeURIComponent(offer.id)}`}
+            >
               Подробнее
             </a>
             <button

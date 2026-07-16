@@ -117,7 +117,7 @@ describe('CartPage', () => {
     })
     render(<CartPage />)
 
-    expect(screen.getByRole('link', { name: 'Войти через Steam' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Продолжить со Steam' })).toHaveAttribute(
       'href',
       '/auth?returnTo=%2Fcart&required=steam',
     )

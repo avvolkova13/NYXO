@@ -35,7 +35,7 @@ export function SteamView({ state }: { state: MarketplaceState }) {
       <header className="account-view__heading">
         <p className="eyebrow">ACCOUNT / STEAM</p>
         <h1 id="account-steam-title">Steam</h1>
-        <p>Подключение аккаунта и адрес для передачи предметов.</p>
+        <p>Способ входа и адрес для передачи предметов.</p>
       </header>
 
       {error && <p className="account-feedback account-feedback--error" role="alert">{error}</p>}
@@ -45,18 +45,18 @@ export function SteamView({ state }: { state: MarketplaceState }) {
         <section className="account-panel" aria-labelledby="steam-connection-title">
           <p className="eyebrow">CONNECTION / STEAM</p>
           <h2 id="steam-connection-title">
-            {steamSession ? 'Steam подключён' : 'Steam не подключён'}
+            {steamSession ? 'Steam выбран' : 'Steam не выбран'}
           </h2>
           {steamSession ? (
             <>
               <strong>{steamSession.displayName}</strong>
-              <p>Сессия Steam активна.</p>
+              <p>Способ входа Steam сохранён.</p>
             </>
           ) : (
             <>
-              <p>Подключите Steam, чтобы подготовить передачу купленных скинов.</p>
+              <p>Выберите Steam, чтобы подготовить передачу купленных скинов.</p>
               <a className="nyxo-action" href="/auth?returnTo=%2Faccount%2Fsteam&required=steam">
-                Войти через Steam
+                Продолжить со Steam
               </a>
             </>
           )}

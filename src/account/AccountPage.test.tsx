@@ -181,7 +181,7 @@ describe('AccountPage', () => {
     renderRoute('/account/steam')
 
     expect(screen.getByRole('heading', { level: 1, name: 'Steam' })).toBeInTheDocument()
-    expect(screen.getByText('Steam подключён')).toBeInTheDocument()
+    expect(screen.getByText('Steam выбран')).toBeInTheDocument()
     expect(screen.getByText('Игрок NYXO')).toBeInTheDocument()
 
     const input = screen.getByRole('textbox', { name: 'Steam Trade URL' })
