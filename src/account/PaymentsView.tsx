@@ -1,12 +1,7 @@
 import type { MarketplacePayment } from '../marketplace/marketplaceStore'
+import { accountDateTime, formatAccountDate } from './formatAccountDate'
 
 const formatCoins = (value: number) => `${value.toLocaleString('ru-RU')} COINS`
-const formatDate = (value: string) => new Intl.DateTimeFormat('ru-RU', {
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric',
-  timeZone: 'UTC',
-}).format(new Date(value))
 
 export function PaymentsView({ payments }: { payments: MarketplacePayment[] }) {
   return (
@@ -34,7 +29,9 @@ export function PaymentsView({ payments }: { payments: MarketplacePayment[] }) {
                   <small>{topUp ? 'COINS / IN' : 'COINS / OUT'}</small>
                   <strong>{topUp ? 'Пополнение' : 'Покупка'}</strong>
                 </div>
-                <time dateTime={payment.createdAt}>{formatDate(payment.createdAt)}</time>
+                <time dateTime={accountDateTime(payment.createdAt)}>
+                  {formatAccountDate(payment.createdAt)}
+                </time>
                 <b className={topUp ? 'account-payment__amount--positive' : undefined}>
                   {topUp ? '+' : '−'}{formatCoins(payment.amountCoins)}
                 </b>

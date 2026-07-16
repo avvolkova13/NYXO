@@ -1,12 +1,7 @@
 import type { MarketplaceOrder } from '../marketplace/marketplaceStore'
+import { accountDateTime, formatAccountDate } from './formatAccountDate'
 
 const formatCoins = (value: number) => `${value.toLocaleString('ru-RU')} COINS`
-const formatDate = (value: string) => new Intl.DateTimeFormat('ru-RU', {
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric',
-  timeZone: 'UTC',
-}).format(new Date(value))
 
 export function OrdersList({ orders }: { orders: MarketplaceOrder[] }) {
   if (orders.length === 0) {
@@ -32,7 +27,9 @@ export function OrdersList({ orders }: { orders: MarketplaceOrder[] }) {
               <span>Заказ</span>
               <strong>{order.number}</strong>
             </div>
-            <time dateTime={order.createdAt}>{formatDate(order.createdAt)}</time>
+            <time dateTime={accountDateTime(order.createdAt)}>
+              {formatAccountDate(order.createdAt)}
+            </time>
             <span className="account-status account-status--complete">Выполнен</span>
           </header>
           <ul className="account-order__items">

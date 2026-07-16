@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../App'
 import {
   createDefaultMarketplaceState,
+  MARKETPLACE_STORAGE_KEY,
   readMarketplaceState,
   replaceMarketplaceState,
 } from '../marketplace/marketplaceStore'
@@ -151,6 +152,20 @@ describe('AccountPage', () => {
     expect(screen.getByText('Пополнение')).toBeInTheDocument()
     expect(screen.getByText('+3 000 COINS')).toBeInTheDocument()
     expect(screen.getAllByText('Выполнен')).toHaveLength(2)
+  })
+
+  it.each([
+    ['/account/purchases', 'Покупки'],
+    ['/account/payments', 'История платежей'],
+  ])('keeps %s usable when persisted history dates are malformed', (route, heading) => {
+    const malformed = createDefaultMarketplaceState()
+    malformed.orders[0].createdAt = 'not-a-date'
+    malformed.payments[0].createdAt = 'also-not-a-date'
+    localStorage.setItem(MARKETPLACE_STORAGE_KEY, JSON.stringify(malformed))
+
+    expect(() => renderRoute(route)).not.toThrow()
+    expect(screen.getByRole('heading', { level: 1, name: heading })).toBeInTheDocument()
+    expect(screen.getByText('Дата недоступна')).not.toHaveAttribute('datetime')
   })
 
   it('shows Steam state and persists an edited Trade URL', async () => {
