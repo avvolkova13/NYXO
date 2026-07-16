@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -7,7 +7,10 @@ import styles from '../styles.css?raw'
 import { CatalogPage } from './CatalogPage'
 import { ProductPreviewPage } from './ProductPreviewPage'
 
-afterEach(() => vi.restoreAllMocks())
+afterEach(() => {
+  vi.useRealTimers()
+  vi.restoreAllMocks()
+})
 
 function mediaBlockContaining(query: string, selector: string) {
   const marker = `@media (${query})`
@@ -92,6 +95,28 @@ describe('CatalogPage', () => {
     expect(window.location.search).toContain('query=Steam')
   })
 
+  it('shows deterministic accessible loading only when requested', () => {
+    vi.useFakeTimers()
+    window.history.replaceState(null, '', '/catalog?loading=1')
+    render(<CatalogPage />)
+
+    expect(screen.getByRole('status', { name: 'Загружаем каталог' })).toHaveAttribute(
+      'aria-busy',
+      'true',
+    )
+    expect(screen.queryByTestId('catalog-product')).not.toBeInTheDocument()
+    expect(window.location.search).toBe('?loading=1')
+
+    act(() => vi.advanceTimersByTime(349))
+    expect(screen.getByRole('status', { name: 'Загружаем каталог' })).toBeInTheDocument()
+
+    act(() => vi.advanceTimersByTime(1))
+    expect(screen.queryByRole('status', { name: 'Загружаем каталог' })).not.toBeInTheDocument()
+    expect(screen.getAllByTestId('catalog-product')).toHaveLength(products.length)
+    expect(screen.getAllByText(/COINS/).length).toBeGreaterThan(0)
+    expect(window.location.search).toBe('')
+  })
+
   it('clears filters from the empty state', async () => {
     const user = userEvent.setup()
     render(<CatalogPage />)
@@ -151,6 +176,43 @@ describe('CatalogPage', () => {
       'aria-expanded',
       'true',
     )
+  })
+
+  it('synchronizes controls and results across query-only popstate navigation', () => {
+    window.history.replaceState(null, '', '/catalog?query=Steam&sort=price-asc')
+    render(<CatalogPage />)
+
+    const search = screen.getByRole('searchbox', { name: 'Поиск по каталогу' })
+    const sorting = screen.getByRole('combobox', { name: 'Сортировка' })
+    expect(search).toHaveValue('Steam')
+    expect(sorting).toHaveValue('price-asc')
+    expect(
+      screen.getAllByTestId('catalog-product').every((card) => card.textContent?.includes('Steam')),
+    ).toBe(true)
+
+    act(() => {
+      window.history.pushState(null, '', '/catalog?query=GPT&sort=price-desc')
+      window.dispatchEvent(new PopStateEvent('popstate'))
+    })
+
+    expect(search).toHaveValue('GPT')
+    expect(sorting).toHaveValue('price-desc')
+    expect(
+      screen.getAllByTestId('catalog-product').every((card) => card.textContent?.includes('GPT')),
+    ).toBe(true)
+    expect(window.location.search).toBe('?query=GPT&sort=price-desc')
+
+    act(() => {
+      window.history.replaceState(null, '', '/catalog?query=Steam&sort=price-asc')
+      window.dispatchEvent(new PopStateEvent('popstate'))
+    })
+
+    expect(search).toHaveValue('Steam')
+    expect(sorting).toHaveValue('price-asc')
+    expect(
+      screen.getAllByTestId('catalog-product').every((card) => card.textContent?.includes('Steam')),
+    ).toBe(true)
+    expect(window.location.search).toBe('?query=Steam&sort=price-asc')
   })
 
   it('restores and toggles game or service kinds independently', async () => {

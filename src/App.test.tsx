@@ -72,6 +72,52 @@ describe('NYXO landing page', () => {
     ).toBeInTheDocument()
   })
 
+  it.each([
+    ['/catalog', 'catalog'],
+    [`/catalog/${products[0].slug}`, 'product'],
+  ])('keeps shared navigation route-safe on the %s route', (pathname) => {
+    window.history.replaceState({}, '', pathname)
+    render(<App />)
+
+    const header = document.querySelector('.site-header') as HTMLElement
+    const footer = screen.getByRole('contentinfo')
+
+    expect(within(header).getByRole('link', { name: 'NYXO, на главную' })).toHaveAttribute(
+      'href',
+      '/',
+    )
+    expect(within(header).getByRole('link', { name: 'Каталог' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    )
+
+    for (const [label, href] of [
+      ['Популярное', '/#popular'],
+      ['Как это работает', '/#how'],
+      ['FAQ', '/#faq'],
+    ]) {
+      expect(within(header).getByRole('link', { name: label })).toHaveAttribute('href', href)
+      expect(within(footer).getByRole('link', { name: label })).toHaveAttribute('href', href)
+    }
+
+    expect(within(header).getByRole('link', { name: 'Инвентарь' })).toHaveAttribute(
+      'href',
+      '/#account-inventory',
+    )
+    expect(within(footer).getByRole('link', { name: 'Личный кабинет' })).toHaveAttribute(
+      'href',
+      '/#account-inventory',
+    )
+  })
+
+  it('does not mark Catalog as current on Home', () => {
+    render(<App />)
+
+    expect(
+      within(document.querySelector('.site-header')!).getByRole('link', { name: 'Каталог' }),
+    ).not.toHaveAttribute('aria-current')
+  })
+
   it('uses same-document navigation for ordinary internal catalog clicks', () => {
     vi.spyOn(window, 'scrollTo').mockImplementation(() => undefined)
     render(<App />)

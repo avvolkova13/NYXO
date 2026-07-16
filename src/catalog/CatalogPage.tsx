@@ -46,15 +46,40 @@ export function CatalogPage() {
   const initialState = useMemo(() => parseCatalogState(window.location.search), [])
   const [filters, setFilters] = useState<CatalogFilters>(initialState.filters)
   const [sort, setSort] = useState<CatalogSort>(initialState.sort)
+  const [isLoading, setIsLoading] = useState(
+    () => new URLSearchParams(window.location.search).get('loading') === '1',
+  )
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [notice, setNotice] = useState('')
 
   const results = useMemo(() => filterProducts(products, filters, sort), [filters, sort])
 
   useEffect(() => {
+    if (isLoading) return
+
     const query = serializeCatalogState(filters, sort)
     window.history.replaceState(null, '', `${window.location.pathname}${query ? `?${query}` : ''}`)
-  }, [filters, sort])
+  }, [filters, isLoading, sort])
+
+  useEffect(() => {
+    if (!isLoading) return
+
+    const timer = window.setTimeout(() => setIsLoading(false), 350)
+    return () => window.clearTimeout(timer)
+  }, [isLoading])
+
+  useEffect(() => {
+    const syncFromLocation = () => {
+      if (window.location.pathname !== '/catalog') return
+
+      const nextState = parseCatalogState(window.location.search)
+      setFilters(nextState.filters)
+      setSort(nextState.sort)
+    }
+
+    window.addEventListener('popstate', syncFromLocation)
+    return () => window.removeEventListener('popstate', syncFromLocation)
+  }, [])
 
   const updateFilters = (patch: Partial<CatalogFilters>) => {
     setFilters((current) => ({ ...current, ...patch }))
@@ -67,6 +92,35 @@ export function CatalogPage() {
   const reset = () => {
     setFilters({ ...defaultCatalogFilters })
     setSort('popular')
+  }
+
+  if (isLoading) {
+    return (
+      <div className="catalog-page">
+        <Header />
+        <main className="catalog-page__main" id="catalog">
+          <header className="catalog-page__intro">
+            <p className="eyebrow">NYXO / MARKETPLACE</p>
+            <h1>Каталог</h1>
+            <p>Скины и цифровые пополнения с понятной ценой в COINS.</p>
+          </header>
+          <section
+            className="catalog-loading"
+            role="status"
+            aria-label="Загружаем каталог"
+            aria-busy="true"
+          >
+            <p>Загружаем каталог…</p>
+            <div className="catalog-loading__grid" aria-hidden="true">
+              {Array.from({ length: 6 }, (_, index) => (
+                <span key={index} className="catalog-loading__card" />
+              ))}
+            </div>
+          </section>
+        </main>
+        <Footer />
+      </div>
+    )
   }
 
   const chips = [

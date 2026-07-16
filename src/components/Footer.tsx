@@ -5,10 +5,10 @@ type FooterDestination = {
 
 const primaryDestinations: FooterDestination[] = [
   { label: 'Каталог', href: '/catalog' },
-  { label: 'Популярное', href: '#popular' },
-  { label: 'Как это работает', href: '#how' },
-  { label: 'FAQ', href: '#faq' },
-  { label: 'Личный кабинет', href: '#account' },
+  { label: 'Популярное', href: '/#popular' },
+  { label: 'Как это работает', href: '/#how' },
+  { label: 'FAQ', href: '/#faq' },
+  { label: 'Личный кабинет', href: '/#account-inventory' },
   { label: 'Поддержка', href: 'mailto:support@nyxo.market' },
 ]
 
@@ -20,6 +20,9 @@ const legalDestinations: FooterDestination[] = [
 ]
 
 export function Footer() {
+  const catalogIsCurrent = window.location.pathname === '/catalog'
+    || window.location.pathname.startsWith('/catalog/')
+
   return (
     <footer
       className="site-footer"
@@ -40,7 +43,13 @@ export function Footer() {
       <div className="site-footer__bottom">
         <nav aria-label="Разделы страницы" className="site-footer__nav site-footer__nav--main">
           {primaryDestinations.map((destination) => (
-            <a key={destination.label} href={destination.href}>
+            <a
+              key={destination.label}
+              href={destination.href}
+              aria-current={
+                destination.href === '/catalog' && catalogIsCurrent ? 'page' : undefined
+              }
+            >
               {destination.label}
             </a>
           ))}
