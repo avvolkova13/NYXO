@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { Footer } from '../components/Footer'
 import { Header } from '../components/Header'
@@ -52,8 +52,21 @@ export function CatalogPage() {
   )
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [notice, setNotice] = useState('')
+  const [visiblePages, setVisiblePages] = useState(1)
+  const infiniteScrollSentinel = useRef<HTMLDivElement>(null)
+  const usesManualPaging =
+    typeof window.IntersectionObserver !== 'function' ||
+    window.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true
 
   const results = useMemo(() => filterProducts(products, filters, sort), [filters, sort])
+  const feedKey = useMemo(() => serializeCatalogState(filters, sort), [filters, sort])
+  const visibleResults = useMemo(
+    () =>
+      Array.from({ length: visiblePages }, (_, pageIndex) =>
+        results.map((product) => ({ product, pageIndex })),
+      ).flat(),
+    [results, visiblePages],
+  )
 
   useEffect(() => {
     migrateLegacyCartIds()
@@ -78,6 +91,7 @@ export function CatalogPage() {
       if (window.location.pathname !== '/catalog') return
 
       const nextState = parseCatalogState(window.location.search)
+      setVisiblePages(1)
       setFilters(nextState.filters)
       setSort(nextState.sort)
     }
@@ -86,7 +100,29 @@ export function CatalogPage() {
     return () => window.removeEventListener('popstate', syncFromLocation)
   }, [])
 
+  useEffect(() => {
+    setVisiblePages(1)
+  }, [feedKey])
+
+  useEffect(() => {
+    const sentinel = infiniteScrollSentinel.current
+    if (usesManualPaging || results.length === 0 || !sentinel) return
+
+    const observer = new window.IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setVisiblePages((current) => current + 1)
+        }
+      },
+      { rootMargin: '320px 0px' },
+    )
+
+    observer.observe(sentinel)
+    return () => observer.disconnect()
+  }, [results.length, usesManualPaging])
+
   const updateFilters = (patch: Partial<CatalogFilters>) => {
+    setVisiblePages(1)
     setFilters((current) => ({ ...current, ...patch }))
   }
 
@@ -95,6 +131,7 @@ export function CatalogPage() {
   }
 
   const reset = () => {
+    setVisiblePages(1)
     setFilters({ ...defaultCatalogFilters })
     setSort('popular')
   }
@@ -317,7 +354,13 @@ export function CatalogPage() {
               </p>
               <label>
                 <span>Сортировка</span>
-                <select value={sort} onChange={(event) => setSort(event.target.value as CatalogSort)}>
+                <select
+                  value={sort}
+                  onChange={(event) => {
+                    setVisiblePages(1)
+                    setSort(event.target.value as CatalogSort)
+                  }}
+                >
                   <option value="popular">По популярности</option>
                   <option value="newest">Сначала новые</option>
                   <option value="price-asc">Сначала дешевле</option>
@@ -338,11 +381,32 @@ export function CatalogPage() {
             )}
 
             {results.length > 0 ? (
-              <div className="catalog-results__grid">
-                {results.map((product) => (
-                  <CatalogProductCard key={product.id} product={product} onAdded={setNotice} />
-                ))}
-              </div>
+              <>
+                <div className="catalog-results__grid">
+                  {visibleResults.map(({ product, pageIndex }) => (
+                    <CatalogProductCard
+                      key={`${feedKey || 'all'}:${pageIndex}:${product.id}`}
+                      product={product}
+                      onAdded={setNotice}
+                    />
+                  ))}
+                </div>
+                <div
+                  className="catalog-results__infinite"
+                  ref={infiniteScrollSentinel}
+                >
+                  <span role="status" aria-label="Подгрузка каталога" aria-live="polite">
+                    Показано {visibleResults.length} товаров
+                  </span>
+                  {usesManualPaging ? (
+                    <button type="button" onClick={() => setVisiblePages((current) => current + 1)}>
+                      Показать ещё товары
+                    </button>
+                  ) : (
+                    <span aria-hidden="true" className="catalog-results__loading-mark" />
+                  )}
+                </div>
+              </>
             ) : (
               <div className="catalog-results__empty">
                 <h2>Ничего не найдено</h2>
@@ -354,7 +418,11 @@ export function CatalogPage() {
             )}
           </section>
         </div>
-        {notice && <p role="status" className="catalog-page__notice">{notice}</p>}
+        {notice && (
+          <p role="status" aria-label="Состояние корзины" className="catalog-page__notice">
+            {notice}
+          </p>
+        )}
       </main>
       <Footer />
     </div>

@@ -5,11 +5,23 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { products } from '../data/products'
 import { readMarketplaceState } from '../marketplace/marketplaceStore'
 import styles from '../styles.css?raw'
+import { defaultCatalogFilters, filterProducts } from './catalogModel'
 import { CatalogPage } from './CatalogPage'
+
+const idleIntersectionObserver = window.IntersectionObserver
+const idleMatchMedia = window.matchMedia
 
 afterEach(() => {
   vi.useRealTimers()
   vi.restoreAllMocks()
+  Object.defineProperty(window, 'IntersectionObserver', {
+    configurable: true,
+    value: idleIntersectionObserver,
+  })
+  Object.defineProperty(window, 'matchMedia', {
+    configurable: true,
+    value: idleMatchMedia,
+  })
 })
 
 function mediaBlockContaining(query: string, selector: string) {
@@ -48,7 +60,15 @@ describe('catalog responsive styles', () => {
       /\.catalog-page__layout\s*{[^}]*display:\s*grid;[^}]*grid-template-columns:\s*minmax\(220px, 280px\) minmax\(0, 1fr\);/,
     )
     expect(styles).toMatch(
-      /\.catalog-results__grid\s*{[^}]*grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\);/,
+      /\.catalog-results__grid\s*{[^}]*grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\);/,
+    )
+  })
+
+  it('steps down to three columns before the existing tablet and mobile grids', () => {
+    const compactDesktop = mediaBlockContaining('max-width: 1180px', '.catalog-results__grid')
+
+    expect(compactDesktop).toMatch(
+      /\.catalog-results__grid,\s*\.catalog-loading__grid\s*{[^}]*grid-template-columns:\s*repeat\(3, minmax\(0, 1fr\)\);/,
     )
   })
 
@@ -143,7 +163,9 @@ describe('CatalogPage', () => {
     await user.click(button)
     await user.click(button)
 
-    expect(screen.getByRole('status')).toHaveTextContent('добавлено в корзину')
+    expect(screen.getByRole('status', { name: 'Состояние корзины' })).toHaveTextContent(
+      'добавлено в корзину',
+    )
     expect(readMarketplaceState().cartProductIds).toEqual([product.id])
     expect(button).toHaveTextContent('В корзине')
   })
@@ -257,9 +279,137 @@ describe('CatalogPage', () => {
       screen.getByRole('button', { name: `Добавить ${products[3].name} в корзину` }),
     )
 
-    expect(screen.getByRole('status')).toHaveTextContent('Не удалось сохранить')
+    expect(screen.getByRole('status', { name: 'Состояние корзины' })).toHaveTextContent(
+      'Не удалось сохранить',
+    )
     expect(
       screen.getByRole('button', { name: `${products[3].name} уже в корзине` }),
     ).toHaveTextContent('В корзине')
+  })
+
+  it('automatically appends deterministic catalog pages when the sentinel enters view', () => {
+    let intersectionCallback: IntersectionObserverCallback | undefined
+    const observe = vi.fn()
+    const disconnect = vi.fn()
+
+    class ActiveIntersectionObserver {
+      constructor(callback: IntersectionObserverCallback) {
+        intersectionCallback = callback
+      }
+
+      observe = observe
+      disconnect = disconnect
+      unobserve() {}
+    }
+
+    Object.defineProperty(window, 'IntersectionObserver', {
+      configurable: true,
+      value: ActiveIntersectionObserver,
+    })
+
+    render(<CatalogPage />)
+
+    expect(screen.getAllByTestId('catalog-product')).toHaveLength(products.length)
+    expect(observe).toHaveBeenCalledTimes(1)
+
+    act(() => {
+      intersectionCallback?.(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      )
+    })
+
+    expect(screen.getAllByTestId('catalog-product')).toHaveLength(products.length * 2)
+    expect(screen.getByRole('status', { name: 'Подгрузка каталога' })).toHaveTextContent(
+      `Показано ${products.length * 2}`,
+    )
+    const links = screen
+      .getAllByRole('link', { name: 'Подробнее' })
+      .map((link) => link.getAttribute('href'))
+    expect(links.slice(0, products.length)).toEqual(links.slice(products.length))
+  })
+
+  it('resets the visible feed after search, sort, and popstate changes', async () => {
+    let intersectionCallback: IntersectionObserverCallback | undefined
+
+    class ActiveIntersectionObserver {
+      constructor(callback: IntersectionObserverCallback) {
+        intersectionCallback = callback
+      }
+      observe() {}
+      disconnect() {}
+      unobserve() {}
+    }
+
+    Object.defineProperty(window, 'IntersectionObserver', {
+      configurable: true,
+      value: ActiveIntersectionObserver,
+    })
+
+    const user = userEvent.setup()
+    render(<CatalogPage />)
+
+    act(() => {
+      intersectionCallback?.(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      )
+    })
+    expect(screen.getAllByTestId('catalog-product')).toHaveLength(products.length * 2)
+
+    await user.type(screen.getByRole('searchbox', { name: 'Поиск по каталогу' }), 'Steam')
+    const steamProducts = filterProducts(
+      products,
+      { ...defaultCatalogFilters, query: 'Steam' },
+      'popular',
+    )
+    expect(screen.getAllByTestId('catalog-product')).toHaveLength(steamProducts.length)
+
+    act(() => {
+      intersectionCallback?.(
+        [{ isIntersecting: true } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      )
+    })
+    expect(screen.getAllByTestId('catalog-product')).toHaveLength(steamProducts.length * 2)
+
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Сортировка' }), 'price-desc')
+    expect(screen.getAllByTestId('catalog-product')).toHaveLength(steamProducts.length)
+
+    act(() => {
+      window.history.pushState(null, '', '/catalog?query=GPT&sort=popular')
+      window.dispatchEvent(new PopStateEvent('popstate'))
+    })
+    expect(screen.getAllByTestId('catalog-product')).toHaveLength(
+      filterProducts(products, { ...defaultCatalogFilters, query: 'GPT' }, 'popular').length,
+    )
+  })
+
+  it('offers a usable load-more control when automatic observation is unavailable', async () => {
+    Object.defineProperty(window, 'IntersectionObserver', {
+      configurable: true,
+      value: undefined,
+    })
+
+    const user = userEvent.setup()
+    render(<CatalogPage />)
+
+    const loadMore = screen.getByRole('button', { name: 'Показать ещё товары' })
+    expect(screen.getAllByTestId('catalog-product')).toHaveLength(products.length)
+
+    await user.click(loadMore)
+
+    expect(screen.getAllByTestId('catalog-product')).toHaveLength(products.length * 2)
+  })
+
+  it('uses the manual control when reduced motion is requested', () => {
+    Object.defineProperty(window, 'matchMedia', {
+      configurable: true,
+      value: vi.fn().mockReturnValue({ matches: true }),
+    })
+
+    render(<CatalogPage />)
+
+    expect(screen.getByRole('button', { name: 'Показать ещё товары' })).toBeInTheDocument()
   })
 })

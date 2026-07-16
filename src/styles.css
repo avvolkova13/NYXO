@@ -4459,7 +4459,7 @@ details[open] .status-lamp {
 
 .catalog-loading__grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1px;
   background: var(--edge);
   border: 1px solid var(--edge);
@@ -4575,8 +4575,56 @@ details[open] .status-lamp {
 
 .catalog-results__grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.7rem;
+}
+
+.catalog-results__infinite {
+  display: flex;
+  min-height: 88px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.7rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--edge);
+  color: var(--muted-dark);
+  background: var(--plum-black);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.catalog-results__infinite button {
+  min-height: 44px;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--orange);
+  border-radius: 0;
+  color: var(--void);
+  background: var(--orange);
+  font: inherit;
+}
+
+.catalog-results__infinite button:hover,
+.catalog-results__infinite button:focus-visible {
+  border-color: var(--yellow);
+  background: var(--yellow);
+}
+
+.catalog-results__loading-mark {
+  width: 2.6rem;
+  height: 0.5rem;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--orange) 0 0.35rem,
+    transparent 0.35rem 0.55rem
+  );
+  animation: catalog-signal 800ms steps(4, end) infinite;
+}
+
+@keyframes catalog-signal {
+  50% { opacity: 0.25; }
 }
 
 .catalog-product-card .product-card {
@@ -4853,6 +4901,13 @@ details[open] .status-lamp {
   white-space: nowrap;
 }
 
+@media (max-width: 1180px) {
+  .catalog-results__grid,
+  .catalog-loading__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 860px) {
   .catalog-page__layout {
     grid-template-columns: 1fr;
@@ -4975,6 +5030,11 @@ details[open] .status-lamp {
     min-height: 44px;
   }
 
+  .catalog-results__infinite {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
   .catalog-page__notice,
   .product-preview-page [role='status'] {
     right: 1rem;
@@ -5014,6 +5074,12 @@ details[open] .status-lamp {
   .product-preview-page__attributes dd {
     min-width: 0;
     overflow-wrap: anywhere;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .catalog-results__loading-mark {
+    animation: none;
   }
 }
 
