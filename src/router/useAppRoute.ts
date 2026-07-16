@@ -35,7 +35,7 @@ export function navigate(href: string) {
   }
 }
 
-function handleInternalLinkClick(event: MouseEvent) {
+export function handleInternalLinkClick(event: MouseEvent) {
   if (
     event.defaultPrevented ||
     event.button !== 0 ||
@@ -53,7 +53,7 @@ function handleInternalLinkClick(event: MouseEvent) {
   if (target.target && target.target.toLowerCase() !== '_self') return
 
   const rawHref = target.getAttribute('href')
-  if (!rawHref || rawHref.startsWith('#')) return
+  if (!rawHref || rawHref.includes('#')) return
 
   const url = new URL(target.href, window.location.href)
   if (url.origin !== window.location.origin || url.hash) return

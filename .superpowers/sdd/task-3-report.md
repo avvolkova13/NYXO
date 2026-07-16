@@ -79,3 +79,31 @@ Typecheck:
 
 - The full test suite still prints the pre-existing jsdom canvas capability notice. It is unrelated to routing and does not represent a test failure.
 - Deep-link deployment requires the production host to serve the SPA entry point for `/catalog` and `/catalog/*`; that server configuration is outside this source task.
+
+## Native empty-fragment review fix — 2026-07-16
+
+### Root cause
+
+`new URL('/catalog#', window.location.href).hash` is an empty string, so checking only the normalized `URL.hash` value cannot distinguish `/catalog` from an href that explicitly ends in an empty fragment delimiter. The route handler therefore intercepted `/catalog#`, called `preventDefault()`, and navigated to `/catalog`, dropping native fragment behavior.
+
+### RED
+
+Command:
+
+`npm test -- --run src/App.test.tsx -t "does not prevent native link behaviors"`
+
+Result: exit 1. The table passed for Control, Command, Shift, and Alt modifiers; a non-left click; target; download; ordinary hash; mail; and external links. It failed only for `empty fragment link`, where `defaultPrevented` was `true` instead of `false`.
+
+### Fix and GREEN
+
+The handler now checks the anchor's original `href` attribute for the `#` delimiter before URL normalization. Any explicit fragment, including an empty fragment, remains native.
+
+The native-link regression now calls the same exported handler used by the route hook and asserts the resulting event has `defaultPrevented === false`. It does not install a second listener or call `preventDefault()` to suppress the browser behavior.
+
+Focused command:
+
+`npm test -- --run src/router/useAppRoute.test.tsx src/App.test.tsx`
+
+- 2 files passed
+- 15 tests passed
+- 0 failed

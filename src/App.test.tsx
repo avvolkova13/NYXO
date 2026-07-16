@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import App from './App'
 import { products } from './data/products'
+import { handleInternalLinkClick } from './router/useAppRoute'
 
 afterEach(() => {
   window.history.replaceState({}, '', '/')
@@ -82,40 +83,61 @@ describe('NYXO landing page', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Каталог' })).toBeInTheDocument()
   })
 
-  it('leaves modified, targeted, download, hash, mail, and external links native', () => {
-    render(<App />)
+  it('does not prevent native link behaviors', () => {
     const pushState = vi.spyOn(window.history, 'pushState')
-    const preventJsdomNavigation = (event: MouseEvent) => event.preventDefault()
-    document.addEventListener('click', preventJsdomNavigation)
-    const catalogLink = within(document.querySelector('.site-header')!).getByRole('link', {
-      name: 'Каталог',
-    })
+    const catalogLink = Object.assign(document.createElement('a'), { href: '/catalog' })
 
-    fireEvent.click(catalogLink, { ctrlKey: true })
-    const targeted = document.createElement('a')
-    targeted.href = '/catalog'
-    targeted.target = '_blank'
-    document.body.append(targeted)
-    fireEvent.click(targeted)
-    const download = document.createElement('a')
-    download.href = '/catalog'
-    download.download = 'catalog.html'
-    document.body.append(download)
-    fireEvent.click(download)
-    fireEvent.click(
-      within(document.querySelector('.site-header')!).getByRole('link', { name: 'Популярное' }),
-    )
-    fireEvent.click(screen.getByRole('link', { name: 'Поддержка' }))
-    const external = document.createElement('a')
-    external.href = 'https://example.com/catalog'
-    document.body.append(external)
-    fireEvent.click(external)
+    const cases: Array<{
+      name: string
+      link: HTMLAnchorElement
+      event?: MouseEventInit
+    }> = [
+      { name: 'Control click', link: catalogLink, event: { ctrlKey: true } },
+      { name: 'Command click', link: catalogLink, event: { metaKey: true } },
+      { name: 'Shift click', link: catalogLink, event: { shiftKey: true } },
+      { name: 'Alt click', link: catalogLink, event: { altKey: true } },
+      { name: 'non-left click', link: catalogLink, event: { button: 1 } },
+      {
+        name: 'targeted link',
+        link: Object.assign(document.createElement('a'), { href: '/catalog', target: '_blank' }),
+      },
+      {
+        name: 'download link',
+        link: Object.assign(document.createElement('a'), {
+          href: '/catalog',
+          download: 'catalog.html',
+        }),
+      },
+      { name: 'hash link', link: Object.assign(document.createElement('a'), { href: '#popular' }) },
+      {
+        name: 'empty fragment link',
+        link: Object.assign(document.createElement('a'), { href: '/catalog#' }),
+      },
+      {
+        name: 'mail link',
+        link: Object.assign(document.createElement('a'), { href: 'mailto:support@nyxo.market' }),
+      },
+      {
+        name: 'external link',
+        link: Object.assign(document.createElement('a'), { href: 'https://example.com/catalog' }),
+      },
+    ]
+
+    for (const testCase of cases) {
+      const event = new MouseEvent('click', {
+        bubbles: true,
+        button: 0,
+        cancelable: true,
+        ...testCase.event,
+      })
+      Object.defineProperty(event, 'target', { value: testCase.link })
+
+      handleInternalLinkClick(event)
+
+      expect(event.defaultPrevented, testCase.name).toBe(false)
+    }
 
     expect(pushState).not.toHaveBeenCalled()
-    document.removeEventListener('click', preventJsdomNavigation)
-    targeted.remove()
-    download.remove()
-    external.remove()
   })
 
   it('renders the four supplied acquisition steps as one ordered flow', () => {
